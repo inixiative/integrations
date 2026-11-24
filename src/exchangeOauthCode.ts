@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { findProvider } from './catalog';
 import type { OAuthClient, Provider } from './contracts';
+import { findProvider } from './findProvider';
 import { ProviderError } from './utils/providerError';
 import { readProviderJson } from './utils/readProviderJson';
 

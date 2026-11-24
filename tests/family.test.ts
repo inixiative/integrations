@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import { familyProducts } from '../src/familyProducts';
-import { findProvider, providerSchema } from '../src/index';
+import { findProvider } from '../src/findProvider';
+import { providerSchema } from '../src/index';
 import { isFamilyManaged } from '../src/isFamilyManaged';
 
 describe('Google family catalog', () => {

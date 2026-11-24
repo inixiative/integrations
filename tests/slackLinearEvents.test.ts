@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import { createHmac } from 'node:crypto';
 import { eventOperationKey } from '@inixiative/signet/contracts';
-import { findProvider } from '../src/catalog';
+import { findProvider } from '../src/findProvider';
 import { eventResourceKey } from '../src/integrationEventResource';
 import { isAccountFromKingdom } from '../src/isAccountFromKingdom';
 import { linearIntegrationSecret } from '../src/linear/linearIntegrationSecret';

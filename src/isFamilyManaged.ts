@@ -1,5 +1,5 @@
-import { findProvider } from './catalog';
 import type { Provider } from './contracts';
+import { findProvider } from './findProvider';
 
 export const isFamilyManaged = (provider: Provider | null | undefined) => {
   const definition = findProvider(provider);

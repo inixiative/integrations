@@ -1,6 +1,6 @@
 import { eventOperationKey, type IntegrationEvent } from '@inixiative/signet/contracts';
-import { findProvider } from './catalog';
 import type { Provider } from './contracts';
+import { findProvider } from './findProvider';
 import { isIntegrationKeyedKind } from './integrationKeyedKinds';
 
 export const eventResourceKey = (

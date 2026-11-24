@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { findProvider } from '../../../catalog';
 import type { OAuthClient } from '../../../contracts';
+import { findProvider } from '../../../findProvider';
 
 export const githubUserAuthorizeUrl = (app: Pick<OAuthClient, 'clientId'>, state: string) => {
   const url = new URL(z.url().parse(findProvider('github')?.oauth?.authorizeUrl));

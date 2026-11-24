@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { isUncalledLeaf, providers } from './catalog';
+import { providers } from './catalog';
 import type { Provider, ProviderContext } from './contracts';
 import { credentialSecretSchema } from './contracts';
+import { isUncalledLeaf } from './isUncalledLeaf';
 import {
   integrationConfigurationSchemas,
   resourceExternalIdSchemas,
