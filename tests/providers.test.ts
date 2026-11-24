@@ -151,14 +151,16 @@ describe('integration transports', () => {
   });
   it('does not return provider transport metadata or unrequested Slack message fields', async () => {
     const result = await executeProvider(
+      {
+        send: async () =>
+          Response.json({
+            ok: true,
+            messages: [{ ts: '1', text: 'Hello', user: 'U1', private: 'not requested' }],
+            response_metadata: { next_cursor: 'hidden' },
+            has_more: true,
+          }),
+      },
       { ...context('slack'), operation: 'messages.read' },
-      async () =>
-        Response.json({
-          ok: true,
-          messages: [{ ts: '1', text: 'Hello', user: 'U1', private: 'not requested' }],
-          response_metadata: { next_cursor: 'hidden' },
-          has_more: true,
-        }),
     );
     expect(result).toEqual({ messages: [{ ts: '1', text: 'Hello', user: 'U1' }], hasMore: true });
   });
@@ -174,29 +176,33 @@ describe('integration transports', () => {
     expect(() => buildProviderRequest({ ...discord, method: 'bearer' })).toThrow(
       'unsupported_authentication',
     );
-    const result = await executeProvider(discord, async () =>
-      Response.json([
-        {
-          id: '1',
-          content: 'Roll for initiative',
-          timestamp: '2026-09-24T00:00:00Z',
-          type: 0,
-          author: {
-            id: 'U1',
-            username: 'dm',
-            global_name: 'Dungeon Master',
-            email: 'hidden@example.com',
-          },
-          attachments: [{ url: 'https://cdn.discordapp.com/private' }],
-        },
-        {
-          id: '2',
-          content: 'Nat 20',
-          timestamp: '2026-09-24T00:00:01Z',
-          type: 0,
-          author: { id: 'U2', username: 'rogue' },
-        },
-      ]),
+    const result = await executeProvider(
+      {
+        send: async () =>
+          Response.json([
+            {
+              id: '1',
+              content: 'Roll for initiative',
+              timestamp: '2026-09-24T00:00:00Z',
+              type: 0,
+              author: {
+                id: 'U1',
+                username: 'dm',
+                global_name: 'Dungeon Master',
+                email: 'hidden@example.com',
+              },
+              attachments: [{ url: 'https://cdn.discordapp.com/private' }],
+            },
+            {
+              id: '2',
+              content: 'Nat 20',
+              timestamp: '2026-09-24T00:00:01Z',
+              type: 0,
+              author: { id: 'U2', username: 'rogue' },
+            },
+          ]),
+      },
+      discord,
     );
     expect(result).toEqual({
       messages: [
@@ -218,34 +224,42 @@ describe('integration transports', () => {
       hasMore: true,
     });
     await expect(
-      executeProvider(discord, async () => new Response('private-provider-token', { status: 401 })),
+      executeProvider(
+        { send: async () => new Response('private-provider-token', { status: 401 }) },
+        discord,
+      ),
     ).rejects.toThrow('provider_authentication_expired');
   });
   it('normalizes authentication, rate-limit, and provider error bodies without exposing secrets', async () => {
     for (const status of [401, 403, 429, 500])
       await expect(
         executeProvider(
+          { send: async () => new Response('private-provider-token', { status }) },
           context('drive'),
-          async () => new Response('private-provider-token', { status }),
         ),
       ).rejects.toThrow(/^provider_/);
     await expect(
-      executeProvider(context('slack'), async () =>
-        Response.json({ ok: false, error: 'private-provider-token' }),
+      executeProvider(
+        { send: async () => Response.json({ ok: false, error: 'private-provider-token' }) },
+        context('slack'),
       ),
     ).rejects.toThrow('provider_access_denied');
     await expect(
-      executeProvider(context('linear'), async () =>
-        Response.json({ errors: [{ message: 'private-provider-token' }] }),
+      executeProvider(
+        { send: async () => Response.json({ errors: [{ message: 'private-provider-token' }] }) },
+        context('linear'),
       ),
     ).rejects.toThrow('provider_failed');
   });
   it('bounds upstream responses and rejects malformed JSON', async () => {
     await expect(
-      executeProvider(context('drive'), async () => new Response('x'.repeat(1024 * 1024 + 1))),
+      executeProvider(
+        { send: async () => new Response('x'.repeat(1024 * 1024 + 1)) },
+        context('drive'),
+      ),
     ).rejects.toThrow('provider_response_too_large');
     await expect(
-      executeProvider(context('drive'), async () => new Response('not-json')),
+      executeProvider({ send: async () => new Response('not-json') }, context('drive')),
     ).rejects.toThrow('provider_invalid_response');
   });
 });

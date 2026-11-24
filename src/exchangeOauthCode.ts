@@ -3,6 +3,7 @@ import type { OAuthClient, Provider } from './contracts';
 import { findProvider } from './findProvider';
 import { ProviderError } from './utils/providerError';
 import { readProviderJson } from './utils/readProviderJson';
+import type { ProviderSend } from './utils/sendProviderRequest';
 
 const tokenResponseSchema = z.object({
   access_token: z.string().min(1).max(16000),
@@ -13,10 +14,10 @@ const tokenResponseSchema = z.object({
 });
 
 export const exchangeOauthCode = async (
-  family: Provider,
-  input: { code: string; codeVerifier?: string; redirectUri?: string; client: OAuthClient },
-  send: (request: Request) => Promise<Response> = fetch,
+  { app, send = fetch }: { app: OAuthClient; send?: ProviderSend },
+  input: { family: Provider; code: string; codeVerifier?: string; redirectUri?: string },
 ) => {
+  const { family } = input;
   const tokenUrl = z.url().parse(findProvider(family)?.oauth?.tokenUrl);
   let response: Response;
   try {
@@ -30,8 +31,8 @@ export const exchangeOauthCode = async (
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: input.code,
-          client_id: input.client.clientId,
-          client_secret: input.client.clientSecret,
+          client_id: app.clientId,
+          client_secret: app.clientSecret,
           ...(input.redirectUri ? { redirect_uri: input.redirectUri } : {}),
           ...(input.codeVerifier ? { code_verifier: input.codeVerifier } : {}),
         }).toString(),

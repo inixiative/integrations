@@ -3,7 +3,7 @@ import { createHmac } from 'node:crypto';
 import { eventOperationKey } from '@inixiative/signet/contracts';
 import { findProvider } from '../src/findProvider';
 import { eventResourceKey } from '../src/integrationEventResource';
-import { isAccountFromKingdom } from '../src/isAccountFromKingdom';
+import { isAccountSuppliedByHost } from '../src/isAccountSuppliedByHost';
 import { verifyGithubSignature } from '../src/providers/github/events/verifyGithubSignature';
 import { linearIntegrationSecret } from '../src/providers/linear/auth/linearIntegrationSecret';
 import { linearWebhookPayloadSchema } from '../src/providers/linear/events/linearWebhookPayload';
@@ -236,8 +236,8 @@ describe('catalog', () => {
   });
 
   it('Slack and Linear accounts come from Kingdom, not from the owner', () => {
-    expect(isAccountFromKingdom('slack')).toBe(true);
-    expect(isAccountFromKingdom('linear')).toBe(true);
-    expect(isAccountFromKingdom('notion')).toBe(false);
+    expect(isAccountSuppliedByHost('slack')).toBe(true);
+    expect(isAccountSuppliedByHost('linear')).toBe(true);
+    expect(isAccountSuppliedByHost('notion')).toBe(false);
   });
 });

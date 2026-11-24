@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { ProviderContext } from '../../contracts';
 import { providerResponseLimit, readProviderJson } from '../../utils/readProviderJson';
-import { sendProviderRequest } from '../../utils/sendProviderRequest';
+import { type ProviderSend, sendProviderRequest } from '../../utils/sendProviderRequest';
 import { buildGmailMessageRequest } from './buildGmailMessageRequest';
 
 const gmailConcurrency = 10;
@@ -35,9 +35,8 @@ const projectMessage = (value: unknown) => {
 };
 
 export const fetchGmailMessages = async (
-  listRequest: Request,
-  context: ProviderContext,
-  send: (request: Request) => Promise<Response>,
+  { send }: { send: ProviderSend },
+  { listRequest, context }: { listRequest: Request; context: ProviderContext },
 ) => {
   const budget = { remainingBytes: providerResponseLimit };
   const list = listSchema.parse(

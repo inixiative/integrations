@@ -51,26 +51,27 @@ describe('Kingdom GitHub App', () => {
       secret,
     );
     const result = await refreshProviderCredential(
-      'githubOrganization',
-      secret,
-      async (request) => {
-        expect(request.method).toBe('POST');
-        expect(request.redirect).toBe('error');
-        expect(request.url).toBe('https://api.github.com/app/installations/77/access_tokens');
-        const jwt = request.headers.get('authorization')?.replace(/^Bearer /, '') ?? '';
-        expect(decodeJwt(jwt).iss).toBe('123456');
-        expect(request.headers.get('x-github-api-version')).toBeTruthy();
-        expect(await request.json()).toEqual({ permissions: { contents: 'read' } });
-        return Response.json(
-          {
-            ...minted,
-            expires_at: inAnHour(),
-            permissions: { metadata: 'read', contents: 'read' },
-          },
-          { status: 201 },
-        );
+      {
+        app,
+        send: async (request) => {
+          expect(request.method).toBe('POST');
+          expect(request.redirect).toBe('error');
+          expect(request.url).toBe('https://api.github.com/app/installations/77/access_tokens');
+          const jwt = request.headers.get('authorization')?.replace(/^Bearer /, '') ?? '';
+          expect(decodeJwt(jwt).iss).toBe('123456');
+          expect(request.headers.get('x-github-api-version')).toBeTruthy();
+          expect(await request.json()).toEqual({ permissions: { contents: 'read' } });
+          return Response.json(
+            {
+              ...minted,
+              expires_at: inAnHour(),
+              permissions: { metadata: 'read', contents: 'read' },
+            },
+            { status: 201 },
+          );
+        },
       },
-      app,
+      { provider: 'githubOrganization', secret },
     );
     expect(result.secret).toEqual({
       token: 'ghs_installation-token',
@@ -85,10 +86,8 @@ describe('Kingdom GitHub App', () => {
     const secret = { token: 'old', clientCredentials: { subjectId: '77' } };
     const mint = (status: number) =>
       refreshProviderCredential(
-        'githubOrganization',
-        secret,
-        async () => new Response('private', { status }),
-        app,
+        { app, send: async () => new Response('private', { status }) },
+        { provider: 'githubOrganization', secret },
       );
     for (const status of [401, 403, 404])
       await expect(mint(status)).rejects.toThrow('renewal_rejected');
@@ -96,10 +95,11 @@ describe('Kingdom GitHub App', () => {
       await expect(mint(status)).rejects.toThrow('renewal_temporarily_unavailable');
     await expect(
       refreshProviderCredential(
-        'githubOrganization',
-        secret,
-        async () => Response.json({ token: 'x', expires_at: new Date(0).toISOString() }),
-        app,
+        {
+          app,
+          send: async () => Response.json({ token: 'x', expires_at: new Date(0).toISOString() }),
+        },
+        { provider: 'githubOrganization', secret },
       ),
     ).rejects.toThrow('renewal_outcome_unknown');
     for (const [provider, client] of [
@@ -108,7 +108,10 @@ describe('Kingdom GitHub App', () => {
       ['slack', app],
     ] as const)
       await expect(
-        refreshProviderCredential(provider, secret, async () => Response.json(minted), client),
+        refreshProviderCredential(
+          { app: client, send: async () => Response.json(minted) },
+          { provider, secret },
+        ),
       ).rejects.toThrow('renewal_unsupported');
   });
 

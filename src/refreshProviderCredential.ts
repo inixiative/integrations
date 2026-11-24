@@ -7,6 +7,7 @@ import {
   type OAuthClient,
   type SigningClient,
 } from './contracts';
+import type { CredentialClient } from './credentialClient';
 import { githubAppJwt } from './providers/github/auth/githubAppJwt';
 import { githubPermissionScopes } from './providers/github/auth/githubPermissionScopes';
 import { githubRequestHeaders } from './providers/github/githubRequestHeaders';
@@ -15,7 +16,7 @@ import { ProviderError } from './utils/providerError';
 import { readProviderJson } from './utils/readProviderJson';
 
 export const CODEX_TOKEN_URL = 'https://auth.openai.com/oauth/token';
-// The Codex CLI's public OAuth client; Kingdom refreshes the login Codex itself would otherwise refresh.
+// why: the Codex CLI's public OAuth client, so a renewal is the one Codex itself would make.
 export const CODEX_CLIENT_ID = 'app_EMoamEEZ73f0CkXaXp7hrann';
 
 export const PROVIDER_EXCHANGE_TIMEOUT_MS = 15_000;
@@ -243,26 +244,28 @@ const refreshedSecret = (
 };
 
 export const mintProviderCredential = async (
-  provider: string,
-  clientCredentials: ClientCredentials,
-  send: (request: Request) => Promise<Response> = fetch,
-  client?: OAuthClient | SigningClient,
+  { app, send = fetch }: CredentialClient,
+  { provider, clientCredentials }: { provider: string; clientCredentials: ClientCredentials },
 ) =>
   mintedSecret(
     clientCredentials,
-    await fetchRenewalResponse(send, await mintRequest(provider, clientCredentials, client)),
+    await fetchRenewalResponse(send, await mintRequest(provider, clientCredentials, app)),
   );
 
 export const refreshProviderCredential = async (
-  provider: string,
-  value: unknown,
-  send: (request: Request) => Promise<Response> = fetch,
-  client?: OAuthClient | SigningClient,
+  client: CredentialClient,
+  { provider, secret: value }: { provider: string; secret: unknown },
 ) => {
   const secret = credentialSecretSchema.parse(value);
   if (secret.clientCredentials)
-    return await mintProviderCredential(provider, secret.clientCredentials, send, client);
-  const data = await fetchRenewalResponse(send, refreshRequest(provider, secret, client));
+    return await mintProviderCredential(client, {
+      provider,
+      clientCredentials: secret.clientCredentials,
+    });
+  const data = await fetchRenewalResponse(
+    client.send ?? fetch,
+    refreshRequest(provider, secret, client.app),
+  );
   try {
     return refreshedSecret(provider, secret, data);
   } catch (error) {

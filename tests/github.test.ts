@@ -26,7 +26,7 @@ const commitContext: ProviderContext = { ...context, operation: 'commits.read' }
 const entry = { path: 'file.ts', mode: '100644', type: 'blob', sha, size: bytes.length };
 const tree = { sha, truncated: false, tree: [entry] };
 const read = (data: unknown, input = context) =>
-  executeProvider(input, async () => Response.json(data));
+  executeProvider({ send: async () => Response.json(data) }, input);
 
 describe('GitHub scoped immutable reads', () => {
   it('pins host, object identity, version and method without following redirects', () => {

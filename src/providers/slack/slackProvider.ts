@@ -4,7 +4,7 @@ import { declaredOperations } from '../../declaredOperations';
 
 const slackChannelEvents = {
   'events.message.channels': 'Receive messages posted in this public channel',
-  'events.app_mention': "Receive mentions of Kingdom's Slack app in this channel",
+  'events.app_mention': 'Receive mentions of the connected Slack app in this channel',
 } as const;
 
 const slackAccountEvents = {

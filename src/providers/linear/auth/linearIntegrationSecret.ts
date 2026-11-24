@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 
-export const linearIntegrationSecret = (kingdomSecret: string, integrationId: string) =>
-  createHmac('sha256', kingdomSecret)
+export const linearIntegrationSecret = (signingSecret: string, integrationId: string) =>
+  createHmac('sha256', signingSecret)
     .update(`linear-webhook:integration:${integrationId}`)
     .digest('hex');
