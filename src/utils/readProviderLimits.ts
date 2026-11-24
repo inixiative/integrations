@@ -1,29 +1,11 @@
-import { z } from 'zod';
 import type { InferenceProtocol } from '../contracts';
-
-export const capacityWindowSchema = z.strictObject({
-  id: z.string().min(1).max(60),
-  usedPercent: z.number().min(0).max(100).nullable(),
-  resetsAt: z.number().int().nullable(),
-});
-
-export const providerReadingSchema = z.strictObject({
-  rateLimited: z.boolean(),
-  retryAfterMs: z.number().int().min(0).nullable(),
-  windows: z.array(capacityWindowSchema).max(10),
-});
-
-export type ProviderReading = z.infer<typeof providerReadingSchema>;
+import { count } from './count';
+import type { ProviderReading } from './providerReading';
+import { providerReadingSchema } from './providerReadingSchema';
+import { readRateLimit } from './readRateLimit';
 
 const ANTHROPIC_WINDOWS = ['requests', 'tokens', 'input-tokens', 'output-tokens'] as const;
 const OPENAI_WINDOWS = ['requests', 'tokens'] as const;
-
-// Number('') and Number(null) are both 0, so an absent header has to fail before it is parsed.
-const count = (value: string | null): number | null => {
-  if (value === null || value.trim() === '') return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
 
 const usedPercent = (limit: string | null, remaining: string | null): number | null => {
   const total = count(limit),
@@ -32,7 +14,7 @@ const usedPercent = (limit: string | null, remaining: string | null): number | n
   return Math.min(100, Math.max(0, ((total - Math.min(left, total)) / total) * 100));
 };
 
-// OpenAI reports a duration (`6m0s`, `1.5s`, `120ms`); Anthropic an RFC3339 instant.
+// why: OpenAI reports a duration (`6m0s`, `1.5s`, `120ms`); Anthropic an RFC3339 instant.
 const resetsAt = (value: string | null, now: number): number | null => {
   if (!value) return null;
   const instant = Date.parse(value);
@@ -46,33 +28,6 @@ const resetsAt = (value: string | null, now: number): number | null => {
     matched = true;
   }
   return matched ? Math.round(now + total) : null;
-};
-
-const retryAfterMs = (value: string | null, now: number): number | null => {
-  if (!value) return null;
-  const seconds = count(value);
-  if (seconds !== null) return Math.max(0, Math.round(seconds * 1000));
-  const instant = Date.parse(value);
-  return Number.isFinite(instant) ? Math.max(0, Math.round(instant - now)) : null;
-};
-
-// GitHub's primary limit answers 403 with `x-ratelimit-remaining: 0` and its reset in epoch seconds.
-export const readRateLimit = (
-  headers: Headers,
-  status: number,
-  now = Date.now(),
-): Pick<ProviderReading, 'rateLimited' | 'retryAfterMs'> => {
-  const exhausted = count(headers.get('x-ratelimit-remaining')) === 0;
-  const rateLimited =
-    status === 429 || (status === 403 && (exhausted || headers.has('retry-after')));
-  if (!rateLimited) return { rateLimited, retryAfterMs: null };
-  const reset = exhausted ? count(headers.get('x-ratelimit-reset')) : null;
-  return {
-    rateLimited,
-    retryAfterMs:
-      retryAfterMs(headers.get('retry-after'), now) ??
-      (reset === null ? null : Math.max(0, Math.round(reset * 1000 - now))),
-  };
 };
 
 export const readProviderLimits = (
@@ -105,7 +60,7 @@ export const readProviderLimits = (
   });
   const rateLimit = readRateLimit(headers, status, now);
   if (!windows.length && !rateLimit.rateLimited) return null;
-  // A malformed header must never throw into the gateway: the caller treats null as "nothing learned".
+  // why: a malformed header must never throw into the gateway; the caller treats null as "nothing learned".
   const reading = providerReadingSchema.safeParse({ ...rateLimit, windows });
   return reading.success ? reading.data : null;
 };

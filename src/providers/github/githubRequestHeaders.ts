@@ -1,4 +1,4 @@
-export const githubApiVersion = '2026-03-10';
+import { githubApiVersion } from './githubApiVersion';
 
 export const githubRequestHeaders = (headers: Headers, token?: string) => {
   headers.set('Accept', 'application/vnd.github+json');

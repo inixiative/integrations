@@ -2,7 +2,7 @@ import { ProviderError } from '../../../utils/providerError';
 import { requestGithub } from '../requestGithub';
 import type { GithubAppClient } from './githubAppClient';
 import { githubClientForApp } from './githubClientForApp';
-import { githubInstallationSchema } from './githubInstallation';
+import { githubInstallationSchema } from './githubInstallationSchema';
 
 export const fetchGithubAppInstallation = async (
   appClient: GithubAppClient,

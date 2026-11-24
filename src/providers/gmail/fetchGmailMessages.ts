@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import type { ProviderContext } from '../../contracts';
-import { providerResponseLimit, readProviderJson } from '../../utils/readProviderJson';
-import { type ProviderSend, sendProviderRequest } from '../../utils/sendProviderRequest';
+import { providerResponseLimit } from '../../utils/providerResponseLimit';
+import type { ProviderSend } from '../../utils/providerSend';
+import { readProviderJson } from '../../utils/readProviderJson';
+import { sendProviderRequest } from '../../utils/sendProviderRequest';
 import { buildGmailMessageRequest } from './buildGmailMessageRequest';
 
 const gmailConcurrency = 10;

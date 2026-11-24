@@ -1,7 +1,8 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
-import { type ProviderEvent, providerEventSchema } from '../../../providerEvent';
-import { readGithubRepositoryName } from '../models/repository/githubResource';
-import type { GithubNotification } from './listGithubNotifications';
+import type { ProviderEvent } from '../../../providerEvent';
+import { providerEventSchema } from '../../../providerEventSchema';
+import { readGithubRepositoryName } from '../models/repository/readGithubRepositoryName';
+import type { GithubNotification } from './githubNotification';
 
 const namedBy = {
   mention: 'mentions',

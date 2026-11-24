@@ -2,8 +2,8 @@ import { z } from 'zod';
 import type { OAuthClient, Provider } from './contracts';
 import { findProvider } from './findProvider';
 import { ProviderError } from './utils/providerError';
+import type { ProviderSend } from './utils/providerSend';
 import { readProviderJson } from './utils/readProviderJson';
-import type { ProviderSend } from './utils/sendProviderRequest';
 
 const tokenResponseSchema = z.object({
   access_token: z.string().min(1).max(16000),

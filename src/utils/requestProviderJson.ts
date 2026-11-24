@@ -1,5 +1,7 @@
-import { providerResponseLimit, readProviderJson } from './readProviderJson';
-import { type ProviderSend, sendProviderRequest } from './sendProviderRequest';
+import { providerResponseLimit } from './providerResponseLimit';
+import type { ProviderSend } from './providerSend';
+import { readProviderJson } from './readProviderJson';
+import { sendProviderRequest } from './sendProviderRequest';
 
 export const requestProviderJson = async (
   send: ProviderSend,

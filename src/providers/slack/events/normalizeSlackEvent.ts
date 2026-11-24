@@ -1,6 +1,7 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
 import { z } from 'zod';
-import { type ProviderEvent, providerEventSchema } from '../../../providerEvent';
+import type { ProviderEvent } from '../../../providerEvent';
+import { providerEventSchema } from '../../../providerEventSchema';
 import type { SlackEventEnvelope } from './slackEventEnvelope';
 
 const excerptLength = 500;

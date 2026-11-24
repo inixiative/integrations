@@ -1,4 +1,4 @@
-import type { ProviderReading } from './providerLimits';
+import type { ProviderReading } from './providerReading';
 
 const FIRST_COOLDOWN_MS = 60_000;
 const MAXIMUM_BACKOFF_MS = 10 * 60_000;
@@ -21,7 +21,7 @@ export const providerCooldown = (
     MAXIMUM_CONSECUTIVE_FAILURES,
   );
   const backoff = Math.min(FIRST_COOLDOWN_MS * 2 ** (consecutiveFailures - 1), MAXIMUM_BACKOFF_MS);
-  // Clamped: a provider's retry-after is a floor on the wait, never a way to park capacity for a day.
+  // why: a provider's retry-after is a floor on the wait, never a way to park capacity for a day.
   const requested = Math.min(reading.retryAfterMs ?? 0, MAXIMUM_RETRY_AFTER_MS);
   return { unavailableUntil: now + Math.max(backoff, requested), consecutiveFailures };
 };

@@ -6,11 +6,11 @@ import { eventResourceKey } from '../src/integrationEventResource';
 import { isAccountSuppliedByHost } from '../src/isAccountSuppliedByHost';
 import { verifyGithubSignature } from '../src/providers/github/events/verifyGithubSignature';
 import { linearIntegrationSecret } from '../src/providers/linear/auth/linearIntegrationSecret';
-import { linearWebhookPayloadSchema } from '../src/providers/linear/events/linearWebhookPayload';
+import { linearWebhookPayloadSchema } from '../src/providers/linear/events/linearWebhookPayloadSchema';
 import { normalizeLinearEvent } from '../src/providers/linear/events/normalizeLinearEvent';
 import { verifyLinearSignature } from '../src/providers/linear/events/verifyLinearSignature';
 import { normalizeSlackEvent } from '../src/providers/slack/events/normalizeSlackEvent';
-import { slackEventEnvelopeSchema } from '../src/providers/slack/events/slackEventEnvelope';
+import { slackEventEnvelopeSchema } from '../src/providers/slack/events/slackEventEnvelopeSchema';
 import { verifySlackSignature } from '../src/providers/slack/events/verifySlackSignature';
 
 const integrationId = Bun.randomUUIDv7();

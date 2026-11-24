@@ -6,7 +6,8 @@ import {
 import { declaredOperations } from '../../../../declaredOperations';
 import type { ProviderModel } from '../../../../providerModel';
 import { githubEventRepositoryId } from '../../events/githubEventRepositoryId';
-import { githubRepositoryIdSchema, githubRepositoryMetadataSchema } from './githubResource';
+import { githubRepositoryIdSchema } from './githubRepositoryIdSchema';
+import { githubRepositoryMetadataSchema } from './githubRepositoryMetadataSchema';
 
 export const githubRepository = {
   kind: repositoryResourceKind,

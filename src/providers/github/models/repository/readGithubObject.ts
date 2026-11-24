@@ -3,11 +3,9 @@ import { gitObjectIdSchema } from '@inixiative/signet/contracts';
 import { z } from 'zod';
 import type { ProviderContext } from '../../../../contracts';
 import { ProviderError } from '../../../../utils/providerError';
-import {
-  githubTreeEntryModeSchema,
-  githubTreeEntryTypeForMode,
-  githubTreeEntryTypeSchema,
-} from './githubResource';
+import { githubTreeEntryModeSchema } from './githubTreeEntryModeSchema';
+import { githubTreeEntryTypeForMode } from './githubTreeEntryTypeForMode';
+import { githubTreeEntryTypeSchema } from './githubTreeEntryTypeSchema';
 
 export const readGithubObject = (data: unknown, context: ProviderContext, objectId: string) => {
   const identity = z.object({ sha: gitObjectIdSchema }).parse(data);

@@ -1,8 +1,5 @@
 import { ProviderError } from './providerError';
-
-export const providerResponseLimit = 1024 * 1024;
-
-export type ResponseBudget = { remainingBytes: number };
+import type { ResponseBudget } from './responseBudget';
 
 export const readProviderJson = async (
   response: Response,

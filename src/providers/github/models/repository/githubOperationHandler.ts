@@ -2,7 +2,7 @@ import { githubInputSchemas, githubOperationSchema } from '@inixiative/signet/co
 import type { OperationHandler } from '../../../../operationHandler';
 import { objectSchema } from '../../../../utils/objectSchema';
 import { githubRequestHeaders } from '../../githubRequestHeaders';
-import { githubRepositoryMetadataSchema } from './githubResource';
+import { githubRepositoryMetadataSchema } from './githubRepositoryMetadataSchema';
 import { readGithubObject } from './readGithubObject';
 
 const objectKinds = {

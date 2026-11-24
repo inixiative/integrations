@@ -1,25 +1,14 @@
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
 import { providers } from './catalog';
-import {
-  type CredentialSecret,
-  credentialSecretSchema,
-  type OAuthClient,
-  type SigningClient,
-} from './contracts';
+import { CODEX_TOKEN_URL } from './codexTokenUrl';
+import { type CredentialSecret, credentialSecretSchema, type OAuthClient } from './contracts';
 import type { CredentialClient } from './credentialClient';
-import { githubAppJwt } from './providers/github/auth/githubAppJwt';
-import { githubPermissionScopes } from './providers/github/auth/githubPermissionScopes';
-import { githubRequestHeaders } from './providers/github/githubRequestHeaders';
+import { fetchRenewalResponse } from './fetchRenewalResponse';
+import { mintProviderCredential } from './mintProviderCredential';
+import type { RenewalRequest } from './renewalRequest';
 import { jwtClaims } from './utils/jwtClaims';
 import { ProviderError } from './utils/providerError';
-import { readProviderJson } from './utils/readProviderJson';
-
-export const CODEX_TOKEN_URL = 'https://auth.openai.com/oauth/token';
-// why: the Codex CLI's public OAuth client, so a renewal is the one Codex itself would make.
-export const CODEX_CLIENT_ID = 'app_EMoamEEZ73f0CkXaXp7hrann';
-
-export const PROVIDER_EXCHANGE_TIMEOUT_MS = 15_000;
 
 const secondsUntilJwtExpiry = (token: string) => {
   const exp = z.number().int().positive().safeParse(jwtClaims(token)?.exp);
@@ -31,8 +20,6 @@ const secondsUntilJwtExpiry = (token: string) => {
     .max(31536000)
     .parse(exp.data - Math.floor(Date.now() / 1000));
 };
-
-type RenewalRequest = { url: string; headers: Headers; body: string };
 
 const refreshRequest = (
   provider: string,
@@ -127,87 +114,6 @@ const refreshRequest = (
   }
 };
 
-type ClientCredentials = NonNullable<CredentialSecret['clientCredentials']>;
-
-const mintRequest = async (
-  provider: string,
-  clientCredentials: ClientCredentials,
-  client?: OAuthClient | SigningClient,
-): Promise<RenewalRequest> => {
-  const subjectId = clientCredentials.subjectId;
-  if (provider !== 'githubOrganization' || !subjectId || !client || !('privateKey' in client))
-    throw new ProviderError('renewal_unsupported', 409);
-  const headers = githubRequestHeaders(new Headers(), await githubAppJwt(client));
-  headers.set('Content-Type', 'application/json');
-  return {
-    url: `https://api.github.com/app/installations/${encodeURIComponent(subjectId)}/access_tokens`,
-    headers,
-    body: JSON.stringify({ permissions: { contents: 'read' } }),
-  };
-};
-
-const fetchRenewalResponse = async (
-  send: (request: Request) => Promise<Response>,
-  request: RenewalRequest,
-) => {
-  let response: Response;
-  try {
-    response = await send(
-      new Request(request.url, {
-        method: 'POST',
-        headers: request.headers,
-        body: request.body,
-        redirect: 'error',
-        signal: AbortSignal.timeout(PROVIDER_EXCHANGE_TIMEOUT_MS),
-      }),
-    );
-  } catch {
-    throw new ProviderError('renewal_outcome_unknown', 409);
-  }
-  if (response.status === 429 || response.status >= 500) {
-    await response.body?.cancel();
-    throw new ProviderError('renewal_temporarily_unavailable', 503);
-  }
-  if (!response.ok) {
-    await response.body?.cancel();
-    throw new ProviderError('renewal_rejected', 409);
-  }
-  if (!response.body) throw new ProviderError('renewal_outcome_unknown', 409);
-  try {
-    return z
-      .record(z.string(), z.unknown())
-      .parse(await readProviderJson(response, { remainingBytes: 128 * 1024 }));
-  } catch {
-    throw new ProviderError('renewal_outcome_unknown', 409);
-  }
-};
-
-const mintedSecret = (clientCredentials: ClientCredentials, data: Record<string, unknown>) => {
-  const minted = z
-    .object({
-      token: z.string().min(1),
-      expires_at: z.iso.datetime({ offset: true }),
-      permissions: z.record(z.string(), z.string()).default({}),
-    })
-    .safeParse(data);
-  if (!minted.success) throw new ProviderError('renewal_outcome_unknown', 409);
-  const expiresIn = z
-    .number()
-    .int()
-    .positive()
-    .max(31536000)
-    .safeParse(Math.floor((Date.parse(minted.data.expires_at) - Date.now()) / 1000));
-  if (!expiresIn.success) throw new ProviderError('renewal_outcome_unknown', 409);
-  return {
-    secret: credentialSecretSchema.parse({
-      token: minted.data.token,
-      clientCredentials,
-    }),
-    expiresIn: expiresIn.data,
-    scopes: githubPermissionScopes(minted.data.permissions),
-  };
-};
-
 const refreshedSecret = (
   provider: string,
   secret: CredentialSecret,
@@ -242,15 +148,6 @@ const refreshedSecret = (
   if (expiresIn === undefined) throw new ProviderError('renewal_outcome_unknown', 409);
   return { secret: refreshed.data, expiresIn };
 };
-
-export const mintProviderCredential = async (
-  { app, send = fetch }: CredentialClient,
-  { provider, clientCredentials }: { provider: string; clientCredentials: ClientCredentials },
-) =>
-  mintedSecret(
-    clientCredentials,
-    await fetchRenewalResponse(send, await mintRequest(provider, clientCredentials, app)),
-  );
 
 export const refreshProviderCredential = async (
   client: CredentialClient,

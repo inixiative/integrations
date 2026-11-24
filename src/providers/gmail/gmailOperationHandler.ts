@@ -1,7 +1,6 @@
 import type { OperationHandler } from '../../operationHandler';
 
-// Gmail reads its own response: a label listing is followed by a fetch per message,
-// so it never reaches the shared JSON path and has no parse of its own here.
+// why: Gmail reads its own response (a label listing, then a fetch per message), so parse passes it through.
 export const gmailOperationHandler: OperationHandler = {
   request: ({ externalId, limit }) => {
     const url = new URL('https://gmail.googleapis.com/gmail/v1/users/me/messages');

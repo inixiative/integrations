@@ -3,7 +3,7 @@ import { providerResourceLimit } from '../../../../contracts';
 import type { ProviderClient } from '../../../../utils/providerClient';
 import { ProviderError } from '../../../../utils/providerError';
 import { fetchAllGithubPages } from '../../fetchAllGithubPages';
-import { githubRepositoryName } from './githubResource';
+import { githubRepositoryName } from './githubRepositoryName';
 
 const installationsSchema = z.array(z.object({ id: z.number().int().positive() }));
 const repositoriesSchema = z.array(

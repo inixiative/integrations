@@ -1,7 +1,9 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
 import { z } from 'zod';
-import { type ProviderEvent, providerEventSchema } from '../../../providerEvent';
-import { type LinearWebhookPayload, linearUserSchema } from './linearWebhookPayload';
+import type { ProviderEvent } from '../../../providerEvent';
+import { providerEventSchema } from '../../../providerEventSchema';
+import { linearUserSchema } from './linearUserSchema';
+import type { LinearWebhookPayload } from './linearWebhookPayload';
 
 const excerptLength = 500;
 

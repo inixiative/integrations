@@ -1,7 +1,8 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
 import { z } from 'zod';
-import { type ProviderEvent, providerEventSchema } from '../../../providerEvent';
-import { readGithubRepositoryName } from '../models/repository/githubResource';
+import type { ProviderEvent } from '../../../providerEvent';
+import { providerEventSchema } from '../../../providerEventSchema';
+import { readGithubRepositoryName } from '../models/repository/readGithubRepositoryName';
 
 const excerptLength = 500;
 

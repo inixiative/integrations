@@ -1,6 +1,6 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
 import { z } from 'zod';
-import { githubRepositoryIdSchema } from '../models/repository/githubResource';
+import { githubRepositoryIdSchema } from '../models/repository/githubRepositoryIdSchema';
 
 const repositoryIdSchema = z.object({ repository: z.object({ id: z.number().int() }) });
 

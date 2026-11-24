@@ -3,8 +3,8 @@ import type { ProviderContext } from './contracts';
 import { fetchGmailMessages } from './providers/gmail/fetchGmailMessages';
 import { operationHandler } from './registry';
 import { ProviderError } from './utils/providerError';
+import type { ProviderSend } from './utils/providerSend';
 import { requestProviderJson } from './utils/requestProviderJson';
-import type { ProviderSend } from './utils/sendProviderRequest';
 
 export const executeProvider = async (
   { send = fetch }: { send?: ProviderSend },

@@ -1,7 +1,6 @@
 import { ProviderError } from './providerError';
-import { readRateLimit } from './providerLimits';
-
-export type ProviderSend = (request: Request) => Promise<Response>;
+import type { ProviderSend } from './providerSend';
+import { readRateLimit } from './readRateLimit';
 
 export const sendProviderRequest = async (
   send: ProviderSend,

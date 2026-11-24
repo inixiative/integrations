@@ -1,19 +1,13 @@
 import { z } from 'zod';
 import { providers } from './catalog';
-import type { Provider, ProviderContext } from './contracts';
+import type { ProviderContext } from './contracts';
 import { credentialSecretSchema } from './contracts';
+import { integrationConfigurationSchemas } from './integrationConfigurationSchemas';
 import { isUncalledLeaf } from './isUncalledLeaf';
-import {
-  integrationConfigurationSchemas,
-  resourceExternalIdSchemas,
-  resourceMetadataSchemas,
-} from './providerRequestSchemas';
 import { operationHandler } from './registry';
+import { resourceExternalIdSchemas } from './resourceExternalIdSchemas';
+import { resourceMetadataSchemas } from './resourceMetadataSchemas';
 import { ProviderError } from './utils/providerError';
-
-export const resourceMetadataSchema = (key: Provider) => resourceMetadataSchemas[key];
-
-export const resourceExternalIdSchema = (key: Provider) => resourceExternalIdSchemas[key];
 
 export const buildProviderRequest = (
   context: ProviderContext,

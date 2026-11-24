@@ -1,6 +1,6 @@
 import type { ProviderClient } from '../../../utils/providerClient';
 import { iterateGithubPages } from '../iterateGithubPages';
-import { githubInstallationSchema } from './githubInstallation';
+import { githubInstallationSchema } from './githubInstallationSchema';
 
 export const fetchGithubUserInstallation = async (
   client: ProviderClient,
