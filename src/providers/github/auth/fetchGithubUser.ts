@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { GithubClient } from '../githubClient';
+import type { ProviderClient } from '../../../utils/providerClient';
 import { requestGithub } from '../requestGithub';
 
 const githubUserSchema = z.object({
@@ -7,5 +7,5 @@ const githubUserSchema = z.object({
   login: z.string().min(1).max(39),
 });
 
-export const fetchGithubUser = async (client: GithubClient) =>
+export const fetchGithubUser = async (client: ProviderClient) =>
   githubUserSchema.parse(await requestGithub(client, { path: '/user' }));

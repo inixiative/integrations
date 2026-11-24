@@ -1,9 +1,9 @@
-import type { GithubClient } from '../githubClient';
+import type { ProviderClient } from '../../../utils/providerClient';
 import { iterateGithubPages } from '../iterateGithubPages';
 import { githubInstallationSchema } from './githubInstallation';
 
 export const fetchGithubUserInstallation = async (
-  client: GithubClient,
+  client: ProviderClient,
   { installationId }: { installationId: string },
 ) => {
   const pages = iterateGithubPages(

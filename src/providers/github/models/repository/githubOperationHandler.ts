@@ -1,6 +1,6 @@
 import { githubInputSchemas, githubOperationSchema } from '@inixiative/signet/contracts';
 import type { OperationHandler } from '../../../../operationHandler';
-import { objectSchema } from '../../../shared';
+import { objectSchema } from '../../../../utils/objectSchema';
 import { githubRequestHeaders } from '../../githubRequestHeaders';
 import { githubRepositoryMetadataSchema } from './githubResource';
 import { readGithubObject } from './readGithubObject';

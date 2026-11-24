@@ -1,6 +1,6 @@
 import { buildProviderRequest } from './buildProviderRequest';
 import type { ProviderContext } from './contracts';
-import { fetchGmailMessages } from './fetchGmailMessages';
+import { fetchGmailMessages } from './providers/gmail/fetchGmailMessages';
 import { operationHandler } from './registry';
 import { ProviderError } from './utils/providerError';
 import { providerResponseLimit, readProviderJson } from './utils/readProviderJson';

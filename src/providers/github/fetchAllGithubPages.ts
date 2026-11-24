@@ -1,11 +1,12 @@
-import { collectPages } from '../../utils/pagination/collectPages';
-import type { GithubClient } from './githubClient';
-import type { GithubPagesOptions } from './githubPagesOptions';
-import type { GithubRequestInput } from './githubRequestInput';
-import { iterateGithubPages } from './iterateGithubPages';
+import { fetchAllRequestPages } from '../../utils/pagination/fetchAllRequestPages';
+import type { ProviderPagesOptions } from '../../utils/pagination/providerPagesOptions';
+import type { ProviderClient } from '../../utils/providerClient';
+import type { ProviderRequestInput } from '../../utils/providerRequestInput';
+import { githubPagination } from './githubPagination';
+import { requestGithub } from './requestGithub';
 
 export const fetchAllGithubPages = (
-  client: GithubClient,
-  input: GithubRequestInput,
-  options: GithubPagesOptions = {},
-) => collectPages((walk: GithubPagesOptions) => iterateGithubPages(client, input, walk), options);
+  client: ProviderClient,
+  input: ProviderRequestInput,
+  options?: ProviderPagesOptions,
+) => fetchAllRequestPages(githubPagination, (page) => requestGithub(client, page), input, options);

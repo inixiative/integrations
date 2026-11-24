@@ -31,7 +31,12 @@ export const iterateByCursor = <R, T = unknown>(options: ByCursorOptions<R>) => 
         keys.data,
       );
       const next = readPath(response, keys.nextCursor);
-      const nextCursor = next === undefined || next === null || next === '' ? null : String(next);
+      const isLast =
+        next === undefined ||
+        next === null ||
+        next === '' ||
+        (keys.hasMore !== undefined && readPath(response, keys.hasMore) === false);
+      const nextCursor = isLast ? null : String(next);
       if (nextCursor !== null && sent.has(nextCursor))
         throw new RepeatedCursorError(label, progress.pages, nextCursor);
 

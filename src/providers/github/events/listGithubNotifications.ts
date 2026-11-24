@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import type { ProviderClient } from '../../../utils/providerClient';
 import { fetchAllGithubPages } from '../fetchAllGithubPages';
-import type { GithubClient } from '../githubClient';
 
 const githubNotificationSchema = z.looseObject({
   id: z.string().min(1),
@@ -11,7 +11,10 @@ const githubNotificationSchema = z.looseObject({
 });
 export type GithubNotification = z.infer<typeof githubNotificationSchema>;
 
-export const listGithubNotifications = async (client: GithubClient, { since }: { since: Date }) => {
+export const listGithubNotifications = async (
+  client: ProviderClient,
+  { since }: { since: Date },
+) => {
   let truncated = false;
   const notifications = z.array(githubNotificationSchema).parse(
     await fetchAllGithubPages(

@@ -1,12 +1,12 @@
 import { z } from 'zod';
+import type { ProviderClient } from '../../../utils/providerClient';
 import { ProviderError } from '../../../utils/providerError';
-import type { GithubClient } from '../githubClient';
 import { requestGithub } from '../requestGithub';
 
 const membershipSchema = z.object({ state: z.string(), role: z.string() });
 
 export const fetchGithubOrganizationRole = async (
-  client: GithubClient,
+  client: ProviderClient,
   { organizationLogin }: { organizationLogin: string },
 ) => {
   try {

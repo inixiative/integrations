@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { providerResourceLimit } from '../../../../contracts';
+import type { ProviderClient } from '../../../../utils/providerClient';
 import { ProviderError } from '../../../../utils/providerError';
 import { fetchAllGithubPages } from '../../fetchAllGithubPages';
-import type { GithubClient } from '../../githubClient';
 import { githubRepositoryName } from './githubResource';
 
 const installationsSchema = z.array(z.object({ id: z.number().int().positive() }));
@@ -11,7 +11,7 @@ const repositoriesSchema = z.array(
 );
 
 // why: a GitHub App user token reaches only repositories in the App's installations the user sees.
-export const listUserRepositories = async (client: GithubClient) => {
+export const listUserRepositories = async (client: ProviderClient) => {
   const installations = installationsSchema.parse(
     await fetchAllGithubPages(
       client,

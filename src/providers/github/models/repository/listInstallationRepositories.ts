@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { providerResourceLimit } from '../../../../contracts';
+import type { ProviderClient } from '../../../../utils/providerClient';
 import { ProviderError } from '../../../../utils/providerError';
 import { fetchAllGithubPages } from '../../fetchAllGithubPages';
-import type { GithubClient } from '../../githubClient';
 import { githubRepositoryName } from './githubResource';
 
 const totalSchema = z.object({ total_count: z.number().int().min(0) });
@@ -10,7 +10,7 @@ const repositoriesSchema = z.array(
   z.object({ id: z.number().int().positive(), full_name: z.string() }),
 );
 
-export const listInstallationRepositories = async (client: GithubClient) => {
+export const listInstallationRepositories = async (client: ProviderClient) => {
   const repositories = repositoriesSchema.parse(
     await fetchAllGithubPages(
       client,

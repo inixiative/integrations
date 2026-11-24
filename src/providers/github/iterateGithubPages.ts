@@ -1,20 +1,12 @@
-import { iterateProviderPages } from '../../utils/pagination/iterateProviderPages';
-import type { GithubClient } from './githubClient';
-import type { GithubPagesOptions } from './githubPagesOptions';
+import { iterateRequestPages } from '../../utils/pagination/iterateRequestPages';
+import type { ProviderPagesOptions } from '../../utils/pagination/providerPagesOptions';
+import type { ProviderClient } from '../../utils/providerClient';
+import type { ProviderRequestInput } from '../../utils/providerRequestInput';
 import { githubPagination } from './githubPagination';
-import type { GithubRequestInput } from './githubRequestInput';
 import { requestGithub } from './requestGithub';
 
 export const iterateGithubPages = (
-  client: GithubClient,
-  input: GithubRequestInput,
-  options: GithubPagesOptions = {},
-) => {
-  const pageSize = input.query?.[options.keys?.pageSize ?? githubPagination.keys.pageSize];
-  return iterateProviderPages(githubPagination, {
-    ...options,
-    pageSize: pageSize === undefined ? undefined : Number(pageSize),
-    fetchPage: (request) =>
-      requestGithub(client, { ...input, query: { ...input.query, ...request } }),
-  });
-};
+  client: ProviderClient,
+  input: ProviderRequestInput,
+  options?: ProviderPagesOptions,
+) => iterateRequestPages(githubPagination, (page) => requestGithub(client, page), input, options);

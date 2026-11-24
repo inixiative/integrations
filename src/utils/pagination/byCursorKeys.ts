@@ -3,4 +3,5 @@ export type ByCursorKeys = {
   pageSize: string;
   data: string;
   nextCursor: string;
+  hasMore?: string;
 };
