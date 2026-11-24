@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { providerResponseLimit, readProviderJson } from '../readProviderJson';
-import { type ProviderSend, sendProviderRequest } from '../sendProviderRequest';
+import { providerResponseLimit, readProviderJson } from '../utils/readProviderJson';
+import { type ProviderSend, sendProviderRequest } from '../utils/sendProviderRequest';
 import { slackProviderError } from './slackProviderError';
 
 const slackResultSchema = z.looseObject({ ok: z.boolean(), error: z.string().optional() });

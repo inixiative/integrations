@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
-import { ProviderError } from '../src/providerError';
-import { readProviderLimits, readRateLimit } from '../src/providerLimits';
-import { sendProviderRequest } from '../src/sendProviderRequest';
+import { ProviderError } from '../src/utils/providerError';
+import { readProviderLimits, readRateLimit } from '../src/utils/providerLimits';
+import { sendProviderRequest } from '../src/utils/sendProviderRequest';
 
 const now = Date.parse('2026-10-08T12:00:00Z');
 

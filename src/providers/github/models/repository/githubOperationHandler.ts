@@ -1,9 +1,9 @@
 import { githubInputSchemas, githubOperationSchema } from '@inixiative/signet/contracts';
-import type { ProviderClient } from '../client';
-import { githubRequestHeaders } from '../github/githubRequestHeaders';
-import { githubRepositoryMetadataSchema } from '../githubResource';
-import { readGithubObject } from '../readGithubObject';
-import { objectSchema } from './shared';
+import type { OperationHandler } from '../../../../operationHandler';
+import { objectSchema } from '../../../shared';
+import { githubRequestHeaders } from '../../githubRequestHeaders';
+import { githubRepositoryMetadataSchema } from './githubResource';
+import { readGithubObject } from './readGithubObject';
 
 const objectKinds = {
   'commits.read': 'commits',
@@ -16,7 +16,7 @@ const requestedObject = (operation: string, input: Record<string, unknown>) => {
   return { declared, objectId: githubInputSchemas[declared].parse(input).objectId };
 };
 
-export const github: ProviderClient = {
+export const githubOperationHandler: OperationHandler = {
   request: ({ context, metadata, headers }) => {
     const { declared, objectId } = requestedObject(context.operation, context.input);
     const { fullName } = githubRepositoryMetadataSchema.parse(metadata);

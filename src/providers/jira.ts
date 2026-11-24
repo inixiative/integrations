@@ -1,7 +1,7 @@
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { objectSchema, select } from './shared';
 
-export const jira: ProviderClient = {
+export const jira: OperationHandler = {
   request: ({ configuration, id }) => {
     const url = new URL(
       `https://api.atlassian.com/ex/jira/${'cloudId' in configuration ? configuration.cloudId : ''}/rest/api/3/issue/${id}`,

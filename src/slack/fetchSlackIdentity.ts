@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ProviderSend } from '../sendProviderRequest';
+import type { ProviderSend } from '../utils/sendProviderRequest';
 import { requestSlack } from './requestSlack';
 
 const identitySchema = z.object({ team_id: z.string().min(1), user_id: z.string().min(1) });

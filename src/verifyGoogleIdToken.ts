@@ -1,6 +1,6 @@
 import { decodeJwt } from 'jose';
 import { z } from 'zod';
-import { ProviderError } from './providerError';
+import { ProviderError } from './utils/providerError';
 
 const claimsSchema = z.object({
   iss: z.enum(['accounts.google.com', 'https://accounts.google.com']),

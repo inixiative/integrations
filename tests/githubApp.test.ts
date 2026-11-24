@@ -2,13 +2,13 @@ import { describe, expect, it } from 'bun:test';
 import { createHmac, generateKeyPairSync } from 'node:crypto';
 import { decodeJwt, decodeProtectedHeader, importSPKI, jwtVerify } from 'jose';
 import type { SigningClient } from '../src/contracts';
-import { fetchGithubAppInstallation } from '../src/github/fetchGithubAppInstallation';
-import { fetchGithubOrganizationRole } from '../src/github/fetchGithubOrganizationRole';
-import { fetchGithubUserInstallation } from '../src/github/fetchGithubUserInstallation';
-import { githubAppInstallUrl } from '../src/github/githubAppInstallUrl';
-import { githubAppJwt } from '../src/github/githubAppJwt';
-import { listInstallationRepositories } from '../src/github/listInstallationRepositories';
-import { verifyGithubSignature } from '../src/github/verifyGithubSignature';
+import { fetchGithubAppInstallation } from '../src/providers/github/auth/fetchGithubAppInstallation';
+import { fetchGithubOrganizationRole } from '../src/providers/github/auth/fetchGithubOrganizationRole';
+import { fetchGithubUserInstallation } from '../src/providers/github/auth/fetchGithubUserInstallation';
+import { githubAppInstallUrl } from '../src/providers/github/auth/githubAppInstallUrl';
+import { githubAppJwt } from '../src/providers/github/auth/githubAppJwt';
+import { verifyGithubSignature } from '../src/providers/github/events/verifyGithubSignature';
+import { listInstallationRepositories } from '../src/providers/github/models/repository/listInstallationRepositories';
 import { refreshProviderCredential } from '../src/refreshProviderCredential';
 import { validateCredentialSecret } from '../src/validateCredentialSecret';
 
@@ -137,20 +137,24 @@ describe('Kingdom GitHub App', () => {
       [{ id: 500, full_name: 'Org/Last.repo' }],
     ];
     const seen: string[] = [];
-    const names = await listInstallationRepositories('ghs_token', async (request) => {
-      seen.push(request.url);
-      expect(request.headers.get('authorization')).toBe('Bearer ghs_token');
-      const page = Number(new URL(request.url).searchParams.get('page'));
-      return Response.json({ total_count: 101, repositories: pages[page - 1] });
+    const names = await listInstallationRepositories({
+      token: 'ghs_token',
+      send: async (request) => {
+        seen.push(request.url);
+        expect(request.headers.get('authorization')).toBe('Bearer ghs_token');
+        const page = Number(new URL(request.url).searchParams.get('page'));
+        return Response.json({ total_count: 101, repositories: pages[page - 1] });
+      },
     });
     expect(seen).toHaveLength(2);
     expect(names).toHaveLength(101);
     expect(names[0]).toEqual({ id: '1', fullName: 'org/repo-0' });
     expect(names.at(-1)).toEqual({ id: '500', fullName: 'org/last.repo' });
     await expect(
-      listInstallationRepositories('ghs_token', async () =>
-        Response.json({ total_count: 1001, repositories: [] }),
-      ),
+      listInstallationRepositories({
+        token: 'ghs_token',
+        send: async () => Response.json({ total_count: 1001, repositories: [] }),
+      }),
     ).rejects.toThrow('too_many_repositories');
   });
 
@@ -159,18 +163,39 @@ describe('Kingdom GitHub App', () => {
       expect(request.headers.get('authorization')).toBe('Bearer ghu_user');
       return Response.json({ total_count: 2, installations: [installation(1), installation(77)] });
     };
-    expect((await fetchGithubUserInstallation('ghu_user', '77', userInstallations))?.id).toBe(77);
-    expect(await fetchGithubUserInstallation('ghu_user', '78', userInstallations)).toBeNull();
     expect(
       (
-        await fetchGithubAppInstallation(app, '77', async (request) => {
-          expect(request.url).toBe('https://api.github.com/app/installations/77');
-          return Response.json(installation(77, 'Organization', '2026-11-01T00:00:00Z'));
-        })
+        await fetchGithubUserInstallation(
+          { token: 'ghu_user', send: userInstallations },
+          { installationId: '77' },
+        )
+      )?.id,
+    ).toBe(77);
+    expect(
+      await fetchGithubUserInstallation(
+        { token: 'ghu_user', send: userInstallations },
+        { installationId: '78' },
+      ),
+    ).toBeNull();
+    expect(
+      (
+        await fetchGithubAppInstallation(
+          {
+            app,
+            send: async (request) => {
+              expect(request.url).toBe('https://api.github.com/app/installations/77');
+              return Response.json(installation(77, 'Organization', '2026-11-01T00:00:00Z'));
+            },
+          },
+          { installationId: '77' },
+        )
       )?.suspended_at,
     ).toBe('2026-11-01T00:00:00Z');
     expect(
-      await fetchGithubAppInstallation(app, '77', async () => new Response('{}', { status: 404 })),
+      await fetchGithubAppInstallation(
+        { app, send: async () => new Response('{}', { status: 404 }) },
+        { installationId: '77' },
+      ),
     ).toBeNull();
   });
 
@@ -184,41 +209,53 @@ describe('Kingdom GitHub App', () => {
       };
     expect(
       await fetchGithubOrganizationRole(
-        'ghu_user',
-        'acme',
-        membership({ state: 'active', role: 'admin' }),
+        { token: 'ghu_user', send: membership({ state: 'active', role: 'admin' }) },
+        { organizationLogin: 'acme' },
       ),
     ).toBe('admin');
     expect(
       await fetchGithubOrganizationRole(
-        'ghu_user',
-        'acme',
-        membership({ state: 'active', role: 'member' }),
+        { token: 'ghu_user', send: membership({ state: 'active', role: 'member' }) },
+        { organizationLogin: 'acme' },
       ),
     ).toBe('member');
     expect(
       await fetchGithubOrganizationRole(
-        'ghu_user',
-        'acme',
-        membership({ state: 'pending', role: 'admin' }),
+        { token: 'ghu_user', send: membership({ state: 'pending', role: 'admin' }) },
+        { organizationLogin: 'acme' },
       ),
     ).toBeNull();
-    expect(await fetchGithubOrganizationRole('ghu_user', 'acme', membership({}, 404))).toBeNull();
-    expect(await fetchGithubOrganizationRole('ghu_user', 'acme', membership({}, 403))).toBeNull();
+    expect(
+      await fetchGithubOrganizationRole(
+        { token: 'ghu_user', send: membership({}, 404) },
+        { organizationLogin: 'acme' },
+      ),
+    ).toBeNull();
+    expect(
+      await fetchGithubOrganizationRole(
+        { token: 'ghu_user', send: membership({}, 403) },
+        { organizationLogin: 'acme' },
+      ),
+    ).toBeNull();
   });
 
   it('builds the install link from the App’s own page, carrying the state', async () => {
     const url = new URL(
-      await githubAppInstallUrl(app, 'state-123', async () =>
-        Response.json({ html_url: 'https://github.com/apps/kingdom-test' }),
+      await githubAppInstallUrl(
+        {
+          app,
+          send: async () => Response.json({ html_url: 'https://github.com/apps/kingdom-test' }),
+        },
+        { state: 'state-123' },
       ),
     );
     expect(url.toString()).toBe(
       'https://github.com/apps/kingdom-test/installations/new?state=state-123',
     );
     await expect(
-      githubAppInstallUrl(app, 'state-123', async () =>
-        Response.json({ html_url: 'https://evil.test/apps/kingdom' }),
+      githubAppInstallUrl(
+        { app, send: async () => Response.json({ html_url: 'https://evil.test/apps/kingdom' }) },
+        { state: 'state-123' },
       ),
     ).rejects.toThrow();
   });

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ProviderSend } from '../sendProviderRequest';
+import type { ProviderSend } from '../utils/sendProviderRequest';
 import { requestSlack } from './requestSlack';
 
 const maxPages = 20;

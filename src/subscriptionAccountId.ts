@@ -1,5 +1,5 @@
 import type { SubscriptionRuntime } from './contracts';
-import { jwtClaims } from './jwtClaims';
+import { jwtClaims } from './utils/jwtClaims';
 
 export const subscriptionAccountId = (runtime: SubscriptionRuntime, accessToken: string) => {
   if (runtime !== 'codex') return null;

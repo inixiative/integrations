@@ -9,50 +9,14 @@ import {
   conversationPermissionNames,
   conversationPermissionSchema,
   conversationResourceKind,
-  githubOperationNames,
-  githubOperationSchema,
-  repositoryResourceKind,
   threadOperationNames,
   threadOperationSchema,
 } from '@inixiative/signet/contracts';
 import type { Provider, ProviderDefinition } from './contracts';
-import { githubEventRepositoryId } from './github/githubEventRepositoryId';
-
-const declaredOperations = <O extends string>(
-  operations: readonly O[],
-  names: Record<O, string>,
-  resourceKind: string,
-  requiredScopes: string[] = [],
-): ProviderDefinition['operations'] =>
-  operations.map((key) => ({ key, name: names[key], resourceKind, requiredScopes }));
-
-const githubRepositoryEvents = {
-  'events.pull_request.opened': 'Receive pull requests opened in this repository',
-  'events.pull_request.review_requested': 'Receive review requests in this repository',
-  'events.pull_request.assigned': 'Receive pull request assignments in this repository',
-  'events.pull_request.closed': 'Receive pull requests closed or merged in this repository',
-  'events.issue_comment.created': 'Receive comments on issues and pull requests in this repository',
-  'events.issues.opened': 'Receive issues opened in this repository',
-  'events.issues.assigned': 'Receive issue assignments in this repository',
-  'events.pull_request_review.submitted': 'Receive pull request reviews in this repository',
-  'events.pull_request_review_comment.created':
-    'Receive pull request review comments in this repository',
-} as const;
-
-const githubAccountEvents = {
-  'events.notifications.mention': 'Receive the mentions of this GitHub user',
-  'events.notifications.review_requested': 'Receive the review requests of this GitHub user',
-  'events.notifications.assign': 'Receive the assignments of this GitHub user',
-} as const;
-
-const keysOf = <K extends string>(names: Record<K, string>) => Object.keys(names) as K[];
-
-const githubRepositoryOperations = declaredOperations(
-  githubOperationSchema.options,
-  githubOperationNames,
-  repositoryResourceKind,
-  ['contents:read'],
-);
+import { declaredOperations } from './declaredOperations';
+import { githubOrganizationProvider } from './providers/github/githubOrganizationProvider';
+import { githubProvider } from './providers/github/githubProvider';
+import { githubUserProvider } from './providers/github/githubUserProvider';
 
 const slackChannelEvents = {
   'events.message.channels': 'Receive messages posted in this public channel',
@@ -88,15 +52,19 @@ export const providers: ProviderDefinition[] = [
         resourceKind: 'channel',
         requiredScopes: ['channels:history or groups:history'],
       },
-      ...declaredOperations(['events.message.channels'], slackChannelEvents, 'channel', [
-        'channels:history',
-      ]),
-      ...declaredOperations(['events.app_mention'], slackChannelEvents, 'channel', [
-        'app_mentions:read',
-      ]),
-      ...declaredOperations(keysOf(slackAccountEvents), slackAccountEvents, accountResourceKind, [
-        'im:history',
-      ]),
+      ...declaredOperations(
+        slackChannelEvents,
+        'channel',
+        ['channels:history'],
+        ['events.message.channels'],
+      ),
+      ...declaredOperations(
+        slackChannelEvents,
+        'channel',
+        ['app_mentions:read'],
+        ['events.app_mention'],
+      ),
+      ...declaredOperations(slackAccountEvents, accountResourceKind, ['im:history']),
     ],
     syncedResourceKinds: ['channel'],
   },
@@ -147,7 +115,7 @@ export const providers: ProviderDefinition[] = [
         resourceKind: 'issue',
         requiredScopes: ['read'],
       },
-      ...declaredOperations(keysOf(linearTeamEvents), linearTeamEvents, 'team', ['read']),
+      ...declaredOperations(linearTeamEvents, 'team', ['read']),
     ],
     syncedResourceKinds: ['team'],
   },
@@ -294,9 +262,10 @@ export const providers: ProviderDefinition[] = [
     authMethods: ['bearer'],
     inbound: true,
     operations: declaredOperations(
-      archiveOperationSchema.options,
       archiveOperationNames,
       archiveLibraryResourceKind,
+      [],
+      archiveOperationSchema.options,
     ),
   },
   {
@@ -309,14 +278,16 @@ export const providers: ProviderDefinition[] = [
     holderHandleKinds: [conversationResourceKind],
     operations: [
       ...declaredOperations(
-        threadOperationSchema.options,
         threadOperationNames,
         conversationResourceKind,
+        [],
+        threadOperationSchema.options,
       ),
       ...declaredOperations(
-        conversationPermissionSchema.options,
         conversationPermissionNames,
         conversationResourceKind,
+        [],
+        conversationPermissionSchema.options,
       ),
     ],
   },
@@ -336,54 +307,15 @@ export const providers: ProviderDefinition[] = [
     inbound: true,
     delivery: 'installationSocket',
     operations: declaredOperations(
-      chorusOperationSchema.options,
       chorusOperationNames,
       chorusResourceKind,
+      [],
+      chorusOperationSchema.options,
     ),
   },
-  {
-    key: 'github',
-    name: 'GitHub',
-    documentationUrl: 'https://docs.github.com/en/apps/overview',
-    authMethods: ['oauth2'],
-    operations: [],
-    oauth: {
-      authorizeUrl: 'https://github.com/login/oauth/authorize',
-      tokenUrl: 'https://github.com/login/oauth/access_token',
-    },
-  },
-  {
-    key: 'githubOrganization',
-    name: 'GitHub organization',
-    documentationUrl:
-      'https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation',
-    authMethods: ['clientCredentials'],
-    family: 'github',
-    operations: [
-      ...githubRepositoryOperations,
-      ...declaredOperations(
-        keysOf(githubRepositoryEvents),
-        githubRepositoryEvents,
-        repositoryResourceKind,
-        ['issues:read', 'pull_requests:read'],
-      ),
-    ],
-    eventResourceExternalId: githubEventRepositoryId,
-  },
-  {
-    key: 'githubUser',
-    name: 'GitHub user',
-    documentationUrl:
-      'https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-with-a-github-app-on-behalf-of-a-user',
-    authMethods: ['oauth2', 'bearer'],
-    family: 'github',
-    operations: [
-      ...githubRepositoryOperations,
-      ...declaredOperations(keysOf(githubAccountEvents), githubAccountEvents, accountResourceKind, [
-        'notifications',
-      ]),
-    ],
-  },
+  githubProvider,
+  githubOrganizationProvider,
+  githubUserProvider,
   {
     key: 'railway',
     name: 'Railway',

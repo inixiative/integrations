@@ -1,13 +1,13 @@
 import { createHash } from 'node:crypto';
 import { gitObjectIdSchema } from '@inixiative/signet/contracts';
 import { z } from 'zod';
-import type { ProviderContext } from './contracts';
+import type { ProviderContext } from '../../../../contracts';
+import { ProviderError } from '../../../../utils/providerError';
 import {
   githubTreeEntryModeSchema,
   githubTreeEntryTypeForMode,
   githubTreeEntryTypeSchema,
 } from './githubResource';
-import { ProviderError } from './providerError';
 
 export const readGithubObject = (data: unknown, context: ProviderContext, objectId: string) => {
   const identity = z.object({ sha: gitObjectIdSchema }).parse(data);

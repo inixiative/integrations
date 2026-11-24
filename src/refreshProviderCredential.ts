@@ -7,12 +7,12 @@ import {
   type OAuthClient,
   type SigningClient,
 } from './contracts';
-import { githubAppJwt } from './github/githubAppJwt';
-import { githubPermissionScopes } from './github/githubPermissionScopes';
-import { githubRequestHeaders } from './github/githubRequestHeaders';
-import { jwtClaims } from './jwtClaims';
-import { ProviderError } from './providerError';
-import { readProviderJson } from './readProviderJson';
+import { githubAppJwt } from './providers/github/auth/githubAppJwt';
+import { githubPermissionScopes } from './providers/github/auth/githubPermissionScopes';
+import { githubRequestHeaders } from './providers/github/githubRequestHeaders';
+import { jwtClaims } from './utils/jwtClaims';
+import { ProviderError } from './utils/providerError';
+import { readProviderJson } from './utils/readProviderJson';
 
 export const CODEX_TOKEN_URL = 'https://auth.openai.com/oauth/token';
 // The Codex CLI's public OAuth client; Kingdom refreshes the login Codex itself would otherwise refresh.

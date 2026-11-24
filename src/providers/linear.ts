@@ -1,8 +1,8 @@
-import type { ProviderClient } from '../client';
-import { ProviderError } from '../providerError';
+import type { OperationHandler } from '../operationHandler';
+import { ProviderError } from '../utils/providerError';
 import { objectSchema, select } from './shared';
 
-export const linear: ProviderClient = {
+export const linear: OperationHandler = {
   request: ({ externalId, headers }) => {
     headers.set('Content-Type', 'application/json');
     return {

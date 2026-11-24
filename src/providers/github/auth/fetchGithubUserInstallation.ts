@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import type { ProviderSend } from '../sendProviderRequest';
+import type { GithubClient } from '../githubClient';
+import { requestGithub } from '../requestGithub';
 import { githubInstallationSchema } from './githubInstallation';
-import { requestGithub } from './requestGithub';
 
 const pageSize = 100;
 const pageLimit = 10;
@@ -12,13 +12,14 @@ const pageSchema = z.object({
 });
 
 export const fetchGithubUserInstallation = async (
-  userToken: string,
-  installationId: string,
-  send: ProviderSend = fetch,
+  client: GithubClient,
+  { installationId }: { installationId: string },
 ) => {
   for (let page = 1; page <= pageLimit; page++) {
     const data = pageSchema.parse(
-      await requestGithub(`/user/installations?per_page=${pageSize}&page=${page}`, userToken, send),
+      await requestGithub(client, {
+        path: `/user/installations?per_page=${pageSize}&page=${page}`,
+      }),
     );
     for (const candidate of data.installations) {
       const installation = githubInstallationSchema.safeParse(candidate);

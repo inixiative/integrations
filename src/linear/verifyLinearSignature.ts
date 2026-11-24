@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { matchesHmacSha256 } from '../matchesHmacSha256';
+import { matchesHmacSha256 } from '../utils/matchesHmacSha256';
 
 const replayWindowMs = 60 * 1000;
 

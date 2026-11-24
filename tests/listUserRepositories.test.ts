@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { listUserRepositories } from '../src/github/listUserRepositories';
+import { listUserRepositories } from '../src/providers/github/models/repository/listUserRepositories';
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'content-type': 'application/json' } });
@@ -22,7 +22,7 @@ describe('listUserRepositories', () => {
         repositories: repositories.slice((page - 1) * 100, page * 100),
       });
     };
-    const listed = await listUserRepositories('token', send);
+    const listed = await listUserRepositories({ token: 'token', send });
     expect(listed).toHaveLength(150);
     expect(listed[149]).toEqual({ id: '150', fullName: 'acme/repo-150' });
     expect(asked).toEqual([

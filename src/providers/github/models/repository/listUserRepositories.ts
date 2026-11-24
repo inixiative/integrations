@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { providerResourceLimit } from '../contracts';
-import { fetchAllPages } from '../fetchAllPages';
-import { githubRepositoryName } from '../githubResource';
-import { ProviderError } from '../providerError';
-import type { ProviderSend } from '../sendProviderRequest';
-import { requestGithub } from './requestGithub';
+import { providerResourceLimit } from '../../../../contracts';
+import { fetchAllPages } from '../../../../utils/fetchAllPages';
+import { ProviderError } from '../../../../utils/providerError';
+import type { GithubClient } from '../../githubClient';
+import { requestGithub } from '../../requestGithub';
+import { githubRepositoryName } from './githubResource';
 
 const pageSize = 100;
 
@@ -33,10 +33,12 @@ const fetchAllGithubPages = <Item>(
 };
 
 // why: a GitHub App user token reaches only repositories in the App's installations the user sees.
-export const listUserRepositories = async (userToken: string, send: ProviderSend = fetch) => {
+export const listUserRepositories = async (client: GithubClient) => {
   const installations = await fetchAllGithubPages(async (page) => {
     const data = installationsPageSchema.parse(
-      await requestGithub(`/user/installations?per_page=${pageSize}&page=${page}`, userToken, send),
+      await requestGithub(client, {
+        path: `/user/installations?per_page=${pageSize}&page=${page}`,
+      }),
     );
     return { total: data.total_count, items: data.installations };
   });
@@ -44,11 +46,9 @@ export const listUserRepositories = async (userToken: string, send: ProviderSend
   for (const installation of installations) {
     const repositories = await fetchAllGithubPages(async (page) => {
       const data = repositoriesPageSchema.parse(
-        await requestGithub(
-          `/user/installations/${installation.id}/repositories?per_page=${pageSize}&page=${page}`,
-          userToken,
-          send,
-        ),
+        await requestGithub(client, {
+          path: `/user/installations/${installation.id}/repositories?per_page=${pageSize}&page=${page}`,
+        }),
       );
       return { total: data.total_count, items: data.repositories };
     });

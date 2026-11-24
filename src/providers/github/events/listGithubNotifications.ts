@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { ProviderSend } from '../sendProviderRequest';
-import { requestGithub } from './requestGithub';
+import type { GithubClient } from '../githubClient';
+import { requestGithub } from '../requestGithub';
 
 const pageSize = 50;
 const maxPages = 10;
@@ -14,11 +14,7 @@ const githubNotificationSchema = z.looseObject({
 });
 export type GithubNotification = z.infer<typeof githubNotificationSchema>;
 
-export const listGithubNotifications = async (
-  token: string,
-  since: Date,
-  send: ProviderSend = fetch,
-) => {
+export const listGithubNotifications = async (client: GithubClient, { since }: { since: Date }) => {
   const notifications: GithubNotification[] = [];
   for (let page = 1; ; page++) {
     const query = new URLSearchParams({
@@ -30,7 +26,7 @@ export const listGithubNotifications = async (
     });
     const listed = z
       .array(githubNotificationSchema)
-      .parse(await requestGithub(`/notifications?${query}`, token, send));
+      .parse(await requestGithub(client, { path: `/notifications?${query}` }));
     notifications.push(...listed);
     if (listed.length < pageSize) return { notifications, truncated: false };
     if (page === maxPages) return { notifications, truncated: true };

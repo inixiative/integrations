@@ -1,22 +1,19 @@
 import { z } from 'zod';
-import { ProviderError } from '../providerError';
-import type { ProviderSend } from '../sendProviderRequest';
-import { requestGithub } from './requestGithub';
+import { ProviderError } from '../../../utils/providerError';
+import type { GithubClient } from '../githubClient';
+import { requestGithub } from '../requestGithub';
 
 const membershipSchema = z.object({ state: z.string(), role: z.string() });
 
 export const fetchGithubOrganizationRole = async (
-  userToken: string,
-  organizationLogin: string,
-  send: ProviderSend = fetch,
+  client: GithubClient,
+  { organizationLogin }: { organizationLogin: string },
 ) => {
   try {
     const membership = membershipSchema.parse(
-      await requestGithub(
-        `/user/memberships/orgs/${encodeURIComponent(organizationLogin)}`,
-        userToken,
-        send,
-      ),
+      await requestGithub(client, {
+        path: `/user/memberships/orgs/${encodeURIComponent(organizationLogin)}`,
+      }),
     );
     return membership.state === 'active' ? membership.role : null;
   } catch (error) {

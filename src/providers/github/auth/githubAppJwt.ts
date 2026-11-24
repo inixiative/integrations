@@ -1,6 +1,6 @@
 import { createPrivateKey } from 'node:crypto';
 import { SignJWT } from 'jose';
-import type { SigningClient } from '../contracts';
+import type { SigningClient } from '../../../contracts';
 
 export const githubAppJwt = async (
   app: Pick<SigningClient, 'appId' | 'privateKey'>,

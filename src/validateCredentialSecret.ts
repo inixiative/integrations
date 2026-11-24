@@ -1,5 +1,5 @@
 import { credentialSecretSchema } from './contracts';
-import { ProviderError } from './providerError';
+import { ProviderError } from './utils/providerError';
 
 export const validateCredentialSecret = (method: string, secret: unknown, provider: string) => {
   const parsed = credentialSecretSchema.parse(secret);

@@ -2,13 +2,13 @@ import { z } from 'zod';
 import { isUncalledLeaf, providers } from './catalog';
 import type { Provider, ProviderContext } from './contracts';
 import { credentialSecretSchema } from './contracts';
-import { ProviderError } from './providerError';
 import {
   integrationConfigurationSchemas,
   resourceExternalIdSchemas,
   resourceMetadataSchemas,
 } from './providerRequestSchemas';
-import { providerClient } from './registry';
+import { operationHandler } from './registry';
+import { ProviderError } from './utils/providerError';
 
 export const resourceMetadataSchema = (key: Provider) => resourceMetadataSchemas[key];
 
@@ -37,7 +37,7 @@ export const buildProviderRequest = (
     Accept: 'application/json',
     Authorization: context.method === 'apiKey' ? secret.token : `Bearer ${secret.token}`,
   });
-  const client = providerClient(definition.key);
+  const client = operationHandler(definition.key);
   if (!client) throw new ProviderError('unsupported_integration', 400);
   const { url, body } = client.request({
     context,

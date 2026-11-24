@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { buildGmailMessageRequest } from './buildGmailMessageRequest';
 import type { ProviderContext } from './contracts';
-import { providerResponseLimit, readProviderJson } from './readProviderJson';
-import { sendProviderRequest } from './sendProviderRequest';
+import { providerResponseLimit, readProviderJson } from './utils/readProviderJson';
+import { sendProviderRequest } from './utils/sendProviderRequest';
 
 const gmailConcurrency = 10;
 const listSchema = z.object({

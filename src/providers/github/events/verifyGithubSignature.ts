@@ -1,4 +1,4 @@
-import { matchesHmacSha256 } from '../matchesHmacSha256';
+import { matchesHmacSha256 } from '../../../utils/matchesHmacSha256';
 
 export const verifyGithubSignature = (
   rawBody: Uint8Array,

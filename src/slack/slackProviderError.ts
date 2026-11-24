@@ -1,4 +1,4 @@
-import { ProviderError } from '../providerError';
+import { ProviderError } from '../utils/providerError';
 
 const authenticationErrors = ['invalid_auth', 'token_expired', 'token_revoked', 'not_authed'];
 

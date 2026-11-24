@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ProviderError } from '../providerError';
-import type { ProviderSend } from '../sendProviderRequest';
+import { ProviderError } from '../utils/providerError';
+import type { ProviderSend } from '../utils/sendProviderRequest';
 import { type LinearToken, requestLinear } from './requestLinear';
 
 const linearWebhookResourceTypes = ['Issue', 'Comment'];

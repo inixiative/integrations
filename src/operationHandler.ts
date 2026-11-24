@@ -17,7 +17,7 @@ export type ProviderRequestSpec = { url: URL; body?: string };
 // request, and how that provider's response becomes our shape. The registry is
 // exhaustive over Provider, so an integration with no client is a compile error
 // rather than an unsupported_integration at runtime.
-export type ProviderClient = {
+export type OperationHandler = {
   request(input: ProviderRequestInput): ProviderRequestSpec;
   parse(body: unknown, context: ProviderContext): unknown;
 };

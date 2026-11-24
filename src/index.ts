@@ -1,3 +1,3 @@
 export * from './catalog';
 export * from './contracts';
-export * from './providerError';
+export * from './utils/providerError';

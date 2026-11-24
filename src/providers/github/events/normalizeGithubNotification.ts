@@ -1,6 +1,6 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
-import { readGithubRepositoryName } from '../githubResource';
-import { type ProviderEvent, providerEventSchema } from '../providerEvent';
+import { type ProviderEvent, providerEventSchema } from '../../../providerEvent';
+import { readGithubRepositoryName } from '../models/repository/githubResource';
 import type { GithubNotification } from './listGithubNotifications';
 
 const namedBy = {

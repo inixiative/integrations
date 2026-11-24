@@ -1,9 +1,9 @@
-import type { ProviderClient } from './client';
 import type { Provider } from './contracts';
+import type { OperationHandler } from './operationHandler';
 import { confluence } from './providers/confluence';
 import { discord } from './providers/discord';
 import { drive } from './providers/drive';
-import { github } from './providers/github';
+import { githubOperationHandler } from './providers/github/models/repository/githubOperationHandler';
 import { gmail } from './providers/gmail';
 import { jira } from './providers/jira';
 import { linear } from './providers/linear';
@@ -16,7 +16,7 @@ import { teams } from './providers/teams';
 // called out to, google and github are families reached through their products, and
 // inference, subscriptions and hosting are admitted elsewhere. A new provider with no
 // entry is a compile error, not a runtime surprise.
-export const providerClients: Record<Provider, ProviderClient | null> = {
+export const operationHandlers: Record<Provider, OperationHandler | null> = {
   slack,
   discord,
   teams,
@@ -26,8 +26,8 @@ export const providerClients: Record<Provider, ProviderClient | null> = {
   drive,
   confluence,
   github: null,
-  githubOrganization: github,
-  githubUser: github,
+  githubOrganization: githubOperationHandler,
+  githubUser: githubOperationHandler,
   google: null,
   anthropic: null,
   openai: null,
@@ -44,5 +44,5 @@ export const providerClients: Record<Provider, ProviderClient | null> = {
   muse: null,
 };
 
-export const providerClient = (key: string): ProviderClient | null =>
-  providerClients[key as Provider] ?? null;
+export const operationHandler = (key: string): OperationHandler | null =>
+  operationHandlers[key as Provider] ?? null;

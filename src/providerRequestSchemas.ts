@@ -1,7 +1,10 @@
 import { threadIdSchema } from '@inixiative/signet/contracts';
 import { z } from 'zod';
 import { type Provider, providerSchema } from './contracts';
-import { githubRepositoryIdSchema, githubRepositoryMetadataSchema } from './githubResource';
+import {
+  githubRepositoryIdSchema,
+  githubRepositoryMetadataSchema,
+} from './providers/github/models/repository/githubResource';
 
 type PerProvider<TFallback, TOverrides> = {
   [P in Provider]: P extends keyof TOverrides ? TOverrides[P] : TFallback;

@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { slackProviderError } from '../slack/slackProviderError';
 import { objectSchema, select } from './shared';
 
-export const slack: ProviderClient = {
+export const slack: OperationHandler = {
   request: ({ context, externalId, limit }) => {
     const url = new URL(
       `https://slack.com/api/${context.operation === 'messages.read' ? 'conversations.history' : 'conversations.info'}`,

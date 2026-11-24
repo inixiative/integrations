@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { objectSchema, select } from './shared';
 
-export const notion: ProviderClient = {
+export const notion: OperationHandler = {
   request: ({ context, id, limit, headers }) => {
     headers.set('Notion-Version', '2026-03-11');
     const url = new URL(

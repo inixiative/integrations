@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 import { eventOperationKey } from '@inixiative/signet/contracts';
 import { findProvider, isEventLeaf } from '../src/catalog';
-import { normalizeGithubEvent } from '../src/github/normalizeGithubEvent';
-import { normalizeGithubNotification } from '../src/github/normalizeGithubNotification';
 import { eventResourceKey } from '../src/integrationEventResource';
+import { normalizeGithubEvent } from '../src/providers/github/events/normalizeGithubEvent';
+import { normalizeGithubNotification } from '../src/providers/github/events/normalizeGithubNotification';
 
 const integrationId = Bun.randomUUIDv7();
 const at = '2026-11-01T12:00:00Z';

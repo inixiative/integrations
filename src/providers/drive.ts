@@ -1,7 +1,7 @@
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { objectSchema, select } from './shared';
 
-export const drive: ProviderClient = {
+export const drive: OperationHandler = {
   request: ({ id }) => {
     const url = new URL(`https://www.googleapis.com/drive/v3/files/${id}`);
     url.searchParams.set('fields', 'id,name,mimeType,description,modifiedTime,size');

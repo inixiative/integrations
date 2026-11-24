@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { objectSchema, select } from './shared';
 
-export const discord: ProviderClient = {
+export const discord: OperationHandler = {
   request: ({ context, id, limit, headers, token }) => {
     headers.set('Authorization', `Bot ${token}`);
     const url = new URL(

@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import type { ProviderClient } from '../client';
+import type { OperationHandler } from '../operationHandler';
 import { objectSchema, select } from './shared';
 
-export const teams: ProviderClient = {
+export const teams: OperationHandler = {
   request: ({ metadata, id, limit }) => {
     const url = new URL(
       `https://graph.microsoft.com/v1.0/teams/${'teamId' in metadata ? metadata.teamId : ''}/channels/${id}/messages`,

@@ -1,4 +1,4 @@
-import { ProviderError } from './providerError';
+import { ProviderError } from './utils/providerError';
 
 const gmailMessageIdPattern = /^[A-Za-z0-9_-]{1,64}$/;
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { providerCooldown } from '../src/providerCooldown';
+import { providerCooldown } from '../src/utils/providerCooldown';
 
 const now = Date.parse('2026-10-10T12:00:00Z');
 const limited = { rateLimited: true, retryAfterMs: null };

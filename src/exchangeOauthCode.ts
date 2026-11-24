@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { findProvider } from './catalog';
 import type { OAuthClient, Provider } from './contracts';
-import { ProviderError } from './providerError';
-import { readProviderJson } from './readProviderJson';
+import { ProviderError } from './utils/providerError';
+import { readProviderJson } from './utils/readProviderJson';
 
 const tokenResponseSchema = z.object({
   access_token: z.string().min(1).max(16000),

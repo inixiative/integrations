@@ -1,4 +1,4 @@
-import { matchesHmacSha256 } from '../matchesHmacSha256';
+import { matchesHmacSha256 } from '../utils/matchesHmacSha256';
 
 const replayWindowSeconds = 5 * 60;
 

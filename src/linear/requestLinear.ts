@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import type { credentialMethodSchema } from '../contracts';
-import { ProviderError } from '../providerError';
-import { providerResponseLimit, readProviderJson } from '../readProviderJson';
-import { type ProviderSend, sendProviderRequest } from '../sendProviderRequest';
+import { ProviderError } from '../utils/providerError';
+import { providerResponseLimit, readProviderJson } from '../utils/readProviderJson';
+import { type ProviderSend, sendProviderRequest } from '../utils/sendProviderRequest';
 
 export type LinearToken = { method: z.infer<typeof credentialMethodSchema>; token: string };
 

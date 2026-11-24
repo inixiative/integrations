@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { providerResourceLimit } from '../contracts';
-import { githubRepositoryName } from '../githubResource';
-import { ProviderError } from '../providerError';
-import type { ProviderSend } from '../sendProviderRequest';
-import { requestGithub } from './requestGithub';
+import { providerResourceLimit } from '../../../../contracts';
+import { ProviderError } from '../../../../utils/providerError';
+import type { GithubClient } from '../../githubClient';
+import { requestGithub } from '../../requestGithub';
+import { githubRepositoryName } from './githubResource';
 
 const pageSize = 100;
 
@@ -12,15 +12,13 @@ const pageSchema = z.object({
   repositories: z.array(z.object({ id: z.number().int().positive(), full_name: z.string() })),
 });
 
-export const listInstallationRepositories = async (token: string, send: ProviderSend = fetch) => {
+export const listInstallationRepositories = async (client: GithubClient) => {
   const listed = new Map<string, string>();
   for (let page = 1; ; page++) {
     const data = pageSchema.parse(
-      await requestGithub(
-        `/installation/repositories?per_page=${pageSize}&page=${page}`,
-        token,
-        send,
-      ),
+      await requestGithub(client, {
+        path: `/installation/repositories?per_page=${pageSize}&page=${page}`,
+      }),
     );
     if (data.total_count > providerResourceLimit)
       throw new ProviderError('too_many_repositories', 409);

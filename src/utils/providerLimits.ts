@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { InferenceProtocol } from './contracts';
+import type { InferenceProtocol } from '../contracts';
 
 export const capacityWindowSchema = z.strictObject({
   id: z.string().min(1).max(60),
