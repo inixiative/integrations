@@ -1,0 +1,1 @@
+export const PROVIDER_EXCHANGE_TIMEOUT_MS = 15_000;

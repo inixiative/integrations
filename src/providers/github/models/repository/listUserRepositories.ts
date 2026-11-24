@@ -1,0 +1,36 @@
+import { z } from 'zod';
+import { providerResourceLimit } from '../../../../contracts';
+import type { ProviderClient } from '../../../../utils/providerClient';
+import { ProviderError } from '../../../../utils/providerError';
+import { fetchAllGithubPages } from '../../fetchAllGithubPages';
+import { githubRepositoryName } from './githubRepositoryName';
+
+const installationsSchema = z.array(z.object({ id: z.number().int().positive() }));
+const repositoriesSchema = z.array(
+  z.object({ id: z.number().int().positive(), full_name: z.string() }),
+);
+
+// why: a GitHub App user token reaches only repositories in the App's installations the user sees.
+export const listUserRepositories = async (client: ProviderClient) => {
+  const installations = installationsSchema.parse(
+    await fetchAllGithubPages(
+      client,
+      { path: '/user/installations' },
+      { keys: { data: 'installations' } },
+    ),
+  );
+  const listed = new Map<string, string>();
+  for (const installation of installations) {
+    const repositories = repositoriesSchema.parse(
+      await fetchAllGithubPages(
+        client,
+        { path: `/user/installations/${installation.id}/repositories` },
+        { keys: { data: 'repositories' } },
+      ),
+    );
+    for (const repository of repositories)
+      listed.set(String(repository.id), githubRepositoryName(repository.full_name));
+    if (listed.size > providerResourceLimit) throw new ProviderError('too_many_repositories', 409);
+  }
+  return [...listed].map(([id, fullName]) => ({ id, fullName }));
+};
