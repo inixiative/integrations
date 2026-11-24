@@ -18,10 +18,9 @@ export const listGithubNotifications = async (client: GithubClient, { since }: {
       client,
       {
         path: '/notifications',
-        query: { all: 'true', participating: 'true', since: since.toISOString() },
+        query: { all: 'true', participating: 'true', since: since.toISOString(), per_page: 50 },
       },
       {
-        pageSize: 50,
         maxPages: 10,
         onCapped: () => {
           truncated = true;

@@ -1,3 +1,6 @@
 import type { PaginationOptions } from '../../utils/pagination/paginationOptions';
 
-export type GithubPagesOptions = Omit<PaginationOptions<unknown>, 'fetchPage' | 'isError'>;
+export type GithubPagesOptions = Pick<
+  PaginationOptions<unknown>,
+  'maxPages' | 'maxRows' | 'onCapped' | 'onResponse'
+> & { dataKey?: string };

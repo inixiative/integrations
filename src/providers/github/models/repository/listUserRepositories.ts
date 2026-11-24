@@ -13,15 +13,20 @@ const repositoriesSchema = z.array(
 // why: a GitHub App user token reaches only repositories in the App's installations the user sees.
 export const listUserRepositories = async (client: GithubClient) => {
   const installations = installationsSchema.parse(
-    await fetchAllGithubPages(client, { path: '/user/installations', dataKey: 'installations' }),
+    await fetchAllGithubPages(
+      client,
+      { path: '/user/installations' },
+      { dataKey: 'installations' },
+    ),
   );
   const listed = new Map<string, string>();
   for (const installation of installations) {
     const repositories = repositoriesSchema.parse(
-      await fetchAllGithubPages(client, {
-        path: `/user/installations/${installation.id}/repositories`,
-        dataKey: 'repositories',
-      }),
+      await fetchAllGithubPages(
+        client,
+        { path: `/user/installations/${installation.id}/repositories` },
+        { dataKey: 'repositories' },
+      ),
     );
     for (const repository of repositories)
       listed.set(String(repository.id), githubRepositoryName(repository.full_name));
