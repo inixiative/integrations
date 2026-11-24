@@ -5,8 +5,8 @@ Start from the provider's own API documentation, and write down its models first
 ## 1. Declare it
 
 1. Add the key to `providerSchema` in `src/contracts.ts`. The compiler now points at every exhaustive record that needs an entry.
-2. Add `src/providers/<provider>/<provider>Provider.ts` exporting a `ProviderDefinition`, and list it in `src/catalog.ts`. The catalog's order is the order consumers render.
-3. Add an entry to `operationHandlers` (`src/operationHandlers.ts`): a handler, or `null` when nothing reaches the provider through the generic operation path.
+2. Add `src/providers/<provider>/<provider>Provider.ts` exporting a `ProviderDefinition`, and list it in `src/catalog/providers.ts`. The catalog's order is the order consumers render.
+3. Add an entry to `operationHandlers` (`src/operations/operationHandlers.ts`): a handler, or `null` when nothing reaches the provider through the generic operation path.
 
 An operation is `{ key, name, resourceKind, requiredScopes }`. Events are operations whose key starts `events.`. For several operations on one kind with the same scopes, use `declaredOperations(names, resourceKind, requiredScopes)`.
 
@@ -107,7 +107,7 @@ One test file per concern under `tests/`, driving the real functions with a `sen
 
 ## Checklist
 
-- [ ] Key in `providerSchema`, definition listed in `catalog.ts`, entry in `operationHandlers`
+- [ ] Key in `providerSchema`, definition listed in `catalog/providers.ts`, entry in `operationHandlers`
 - [ ] One `request<Provider>` and, if it lists anything, one pagination config and walker
 - [ ] Every call is `(client, input, options?)`; no positional `send`
 - [ ] One export per file, no comments, no product names

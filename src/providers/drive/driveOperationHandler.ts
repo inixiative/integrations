@@ -1,4 +1,4 @@
-import type { OperationHandler } from '../../operationHandler';
+import type { OperationHandler } from '../../operations/operationHandler';
 import { objectSchema } from '../../utils/objectSchema';
 import { select } from '../../utils/select';
 

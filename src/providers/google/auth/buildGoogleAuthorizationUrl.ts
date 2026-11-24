@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { findProvider } from '../../../catalog/findProvider';
 import type { Provider } from '../../../contracts';
-import { findProvider } from '../../../findProvider';
 
 export const buildGoogleAuthorizationUrl = (input: {
   clientId: string;

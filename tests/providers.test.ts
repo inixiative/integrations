@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test';
-import { buildProviderRequest } from '../src/buildProviderRequest';
-import { providers } from '../src/catalog';
+import { isUncalledLeaf } from '../src/catalog/isUncalledLeaf';
+import { providers } from '../src/catalog/providers';
 import type { Provider, ProviderContext } from '../src/contracts';
-import { executeProvider } from '../src/executeProvider';
-import { isUncalledLeaf } from '../src/isUncalledLeaf';
+import { buildProviderRequest } from '../src/operations/buildProviderRequest';
+import { executeProvider } from '../src/operations/executeProvider';
 
 const isGithub = (key: string) => key === 'githubOrganization' || key === 'githubUser';
 

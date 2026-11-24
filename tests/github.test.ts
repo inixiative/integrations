@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { buildProviderRequest } from '../src/buildProviderRequest';
 import type { ProviderContext } from '../src/contracts';
-import { executeProvider } from '../src/executeProvider';
+import { buildProviderRequest } from '../src/operations/buildProviderRequest';
+import { executeProvider } from '../src/operations/executeProvider';
 
 const bytes = Buffer.from('export const answer = 42;');
 const sha = createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');

@@ -3,8 +3,8 @@ import {
   archiveOperationNames,
   archiveOperationSchema,
 } from '@inixiative/signet/contracts';
+import { declaredOperations } from '../../catalog/declaredOperations';
 import type { ProviderDefinition } from '../../contracts';
-import { declaredOperations } from '../../declaredOperations';
 
 export const archiveProvider: ProviderDefinition = {
   key: 'archive',

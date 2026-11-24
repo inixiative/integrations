@@ -15,8 +15,8 @@ bun add @inixiative/integrations zod
 Every file under `src/` holds one export and is importable by its path.
 
 ```ts
-import { findProvider } from '@inixiative/integrations/findProvider';
-import { operationLeaves } from '@inixiative/integrations/operationLeaves';
+import { findProvider } from '@inixiative/integrations/catalog/findProvider';
+import { operationLeaves } from '@inixiative/integrations/catalog/operationLeaves';
 
 findProvider('slack')?.operations;
 operationLeaves('githubOrganization', 'repository');
@@ -24,7 +24,7 @@ operationLeaves('githubOrganization', 'repository');
 
 ## Shape
 
-Each provider has a folder under `src/providers/`, with `auth/`, `events/` and `models/<model>/` inside it where it has that code, and a `<provider>Provider.ts` definition that `src/catalog.ts` lists.
+Each provider has a folder under `src/providers/`, with `auth/`, `events/` and `models/<model>/` inside it where it has that code, and a `<provider>Provider.ts` definition that `src/catalog/providers.ts` lists.
 
 A call that reaches a provider takes the client first, then the request, then anything that is not part of the request:
 
