@@ -9,10 +9,10 @@ The package ships TypeScript source. Every file under `src/` holds one export an
 ## Read the catalog
 
 ```ts
-import { providers } from '@inixiative/integrations/catalog';
-import { findProvider } from '@inixiative/integrations/findProvider';
-import { operationLeaves } from '@inixiative/integrations/operationLeaves';
-import { eventLeaves } from '@inixiative/integrations/eventLeaves';
+import { providers } from '@inixiative/integrations/catalog/providers';
+import { findProvider } from '@inixiative/integrations/catalog/findProvider';
+import { operationLeaves } from '@inixiative/integrations/catalog/operationLeaves';
+import { eventLeaves } from '@inixiative/integrations/catalog/eventLeaves';
 
 findProvider('slack')?.operations;                 // every operation and event Slack declares
 operationLeaves('githubOrganization', 'repository'); // keys that act on a repository
@@ -24,8 +24,8 @@ A `ProviderDefinition` carries `key`, `name`, `documentationUrl`, `authMethods` 
 ## Check a resource before storing it
 
 ```ts
-import { resourceExternalIdSchemas } from '@inixiative/integrations/resourceExternalIdSchemas';
-import { resourceMetadataSchemas } from '@inixiative/integrations/resourceMetadataSchemas';
+import { resourceExternalIdSchemas } from '@inixiative/integrations/resources/resourceExternalIdSchemas';
+import { resourceMetadataSchemas } from '@inixiative/integrations/resources/resourceMetadataSchemas';
 
 resourceExternalIdSchemas.githubOrganization.parse('123456');
 resourceMetadataSchemas.teams.parse({ teamId });
@@ -68,7 +68,7 @@ A recording fetch such as `@inixiative/vcr`'s `createVcrFetch` fits `send` as it
 `executeProvider` runs one catalog operation against one resource: it checks the operation against the catalog, builds the request, sends it and returns the provider's answer in the package's shape.
 
 ```ts
-import { executeProvider } from '@inixiative/integrations/executeProvider';
+import { executeProvider } from '@inixiative/integrations/operations/executeProvider';
 
 await executeProvider({ send }, {
   provider: 'slack',
@@ -85,8 +85,8 @@ await executeProvider({ send }, {
 ## Credentials
 
 ```ts
-import { exchangeOauthCode } from '@inixiative/integrations/exchangeOauthCode';
-import { refreshProviderCredential } from '@inixiative/integrations/refreshProviderCredential';
+import { exchangeOauthCode } from '@inixiative/integrations/credentials/exchangeOauthCode';
+import { refreshProviderCredential } from '@inixiative/integrations/credentials/refreshProviderCredential';
 
 await exchangeOauthCode({ app }, { family: 'google', code, codeVerifier, redirectUri });
 await refreshProviderCredential({ app }, { provider: 'githubOrganization', secret });

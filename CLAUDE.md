@@ -26,7 +26,10 @@ Read [docs/ADDING-A-PROVIDER.md](docs/ADDING-A-PROVIDER.md) before adding or cha
 ```
 src/
   contracts.ts            provider enum, definition and context types
-  catalog.ts              the ordered list of provider definitions
+  catalog/                providers.ts (the ordered list) and the helpers that read it
+  operations/             running one declared operation: buildProviderRequest, executeProvider, operationHandlers
+  credentials/            code exchange, renewal, minting, credential checks
+  resources/              identifier, metadata and configuration schemas per provider
   providers/<provider>/
     <provider>Provider.ts       the definition the catalog lists
     <provider>Pagination.ts     strategy and key names, if it has lists
@@ -34,12 +37,12 @@ src/
     fetchAll<Provider>Pages.ts  a walk over one list
     auth/                       identity, installs, authorize URLs, tokens
     events/                     signature checks, normalizers, webhook calls
-    models/<model>/             one resource kind: its lists, reads and operation handler
+    models/<model>/             one resource kind: its model object, lists, reads and operation handler
   utils/                  shared request, response, limit and error helpers
   utils/pagination/       page and cursor readers
 ```
 
-Files at the top of `src/` are the catalog's helpers (`findProvider`, `operationLeaves`, `isEventLeaf`…), the generic operation path (`buildProviderRequest`, `executeProvider`, `operationHandlers`), credential exchange and renewal (`exchangeOauthCode`, `refreshProviderCredential`, `mintProviderCredential`), and the per-provider identifier, metadata and configuration schemas.
+Only `contracts.ts` and `index.ts` sit at the top of `src/`. A provider definition is composed from its model objects (`slackChannel`, `linearTeam`, `githubRepository`).
 
 ## Checks
 

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 import { createHmac } from 'node:crypto';
 import { eventOperationKey } from '@inixiative/signet/contracts';
-import { findProvider } from '../src/findProvider';
-import { eventResourceKey } from '../src/integrationEventResource';
-import { isAccountSuppliedByHost } from '../src/isAccountSuppliedByHost';
+import { findProvider } from '../src/catalog/findProvider';
+import { eventResourceKey } from '../src/catalog/integrationEventResource';
+import { isAccountSuppliedByHost } from '../src/catalog/isAccountSuppliedByHost';
 import { verifyGithubSignature } from '../src/providers/github/events/verifyGithubSignature';
 import { linearIntegrationSecret } from '../src/providers/linear/auth/linearIntegrationSecret';
 import { linearWebhookPayloadSchema } from '../src/providers/linear/events/linearWebhookPayloadSchema';

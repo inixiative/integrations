@@ -5,8 +5,8 @@ import {
   threadOperationNames,
   threadOperationSchema,
 } from '@inixiative/signet/contracts';
+import { declaredOperations } from '../../catalog/declaredOperations';
 import type { ProviderDefinition } from '../../contracts';
-import { declaredOperations } from '../../declaredOperations';
 
 export const foundryProvider: ProviderDefinition = {
   key: 'foundry',

@@ -1,6 +1,6 @@
 import type { IntegrationEvent } from '@inixiative/signet/contracts';
-import type { ProviderEvent } from '../../../providerEvent';
-import { providerEventSchema } from '../../../providerEventSchema';
+import type { ProviderEvent } from '../../../catalog/providerEvent';
+import { providerEventSchema } from '../../../catalog/providerEventSchema';
 import { readGithubRepositoryName } from '../models/repository/readGithubRepositoryName';
 import type { GithubNotification } from './githubNotification';
 

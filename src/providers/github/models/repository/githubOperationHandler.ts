@@ -1,5 +1,5 @@
 import { githubInputSchemas, githubOperationSchema } from '@inixiative/signet/contracts';
-import type { OperationHandler } from '../../../../operationHandler';
+import type { OperationHandler } from '../../../../operations/operationHandler';
 import { objectSchema } from '../../../../utils/objectSchema';
 import { githubRequestHeaders } from '../../githubRequestHeaders';
 import { githubRepositoryMetadataSchema } from './githubRepositoryMetadataSchema';

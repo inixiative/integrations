@@ -1,6 +1,6 @@
 {
   "name": "@inixiative/integrations",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The provider catalog behind Kingdom integrations: each provider's operations, events, resource kinds and scopes, with the request, webhook and credential code that reaches it.",
   "type": "module",
   "main": "src/index.ts",

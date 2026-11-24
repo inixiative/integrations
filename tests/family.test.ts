@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
-import { familyProducts } from '../src/familyProducts';
-import { findProvider } from '../src/findProvider';
+import { familyProducts } from '../src/catalog/familyProducts';
+import { findProvider } from '../src/catalog/findProvider';
+import { isFamilyManaged } from '../src/catalog/isFamilyManaged';
 import { providerSchema } from '../src/index';
-import { isFamilyManaged } from '../src/isFamilyManaged';
 
 describe('Google family catalog', () => {
   it('declares google as a consent family with endpoints and no operations', () => {

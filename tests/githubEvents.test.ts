@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 import { eventOperationKey } from '@inixiative/signet/contracts';
-import { findProvider } from '../src/findProvider';
-import { eventResourceKey } from '../src/integrationEventResource';
-import { isEventLeaf } from '../src/isEventLeaf';
+import { findProvider } from '../src/catalog/findProvider';
+import { eventResourceKey } from '../src/catalog/integrationEventResource';
+import { isEventLeaf } from '../src/catalog/isEventLeaf';
 import { normalizeGithubEvent } from '../src/providers/github/events/normalizeGithubEvent';
 import { normalizeGithubNotification } from '../src/providers/github/events/normalizeGithubNotification';
 

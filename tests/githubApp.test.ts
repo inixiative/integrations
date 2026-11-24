@@ -2,6 +2,8 @@ import { describe, expect, it } from 'bun:test';
 import { createHmac, generateKeyPairSync } from 'node:crypto';
 import { decodeJwt, decodeProtectedHeader, importSPKI, jwtVerify } from 'jose';
 import type { SigningClient } from '../src/contracts';
+import { refreshProviderCredential } from '../src/credentials/refreshProviderCredential';
+import { validateCredentialSecret } from '../src/credentials/validateCredentialSecret';
 import { fetchGithubAppInstallation } from '../src/providers/github/auth/fetchGithubAppInstallation';
 import { fetchGithubOrganizationRole } from '../src/providers/github/auth/fetchGithubOrganizationRole';
 import { fetchGithubUserInstallation } from '../src/providers/github/auth/fetchGithubUserInstallation';
@@ -9,8 +11,6 @@ import { githubAppInstallUrl } from '../src/providers/github/auth/githubAppInsta
 import { githubAppJwt } from '../src/providers/github/auth/githubAppJwt';
 import { verifyGithubSignature } from '../src/providers/github/events/verifyGithubSignature';
 import { listInstallationRepositories } from '../src/providers/github/models/repository/listInstallationRepositories';
-import { refreshProviderCredential } from '../src/refreshProviderCredential';
-import { validateCredentialSecret } from '../src/validateCredentialSecret';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const app: SigningClient = {

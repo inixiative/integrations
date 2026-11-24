@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import type { ProviderContext } from '../src/contracts';
-import { executeProvider } from '../src/executeProvider';
+import { executeProvider } from '../src/operations/executeProvider';
 
 const context = (limit = 3): ProviderContext => ({
   provider: 'gmail',

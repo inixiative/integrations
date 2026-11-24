@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
-import { providers } from '../src/catalog';
-import { refreshProviderCredential } from '../src/refreshProviderCredential';
-import { validateCredentialSecret } from '../src/validateCredentialSecret';
+import { providers } from '../src/catalog/providers';
+import { refreshProviderCredential } from '../src/credentials/refreshProviderCredential';
+import { validateCredentialSecret } from '../src/credentials/validateCredentialSecret';
 
 const secret = {
   token: 'old-access',

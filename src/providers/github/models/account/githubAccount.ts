@@ -1,6 +1,6 @@
 import { accountResourceKind } from '@inixiative/signet/contracts';
-import { declaredOperations } from '../../../../declaredOperations';
-import type { ProviderModel } from '../../../../providerModel';
+import { declaredOperations } from '../../../../catalog/declaredOperations';
+import type { ProviderModel } from '../../../../catalog/providerModel';
 
 export const githubAccount = {
   kind: accountResourceKind,

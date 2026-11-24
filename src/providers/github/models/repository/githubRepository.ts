@@ -3,8 +3,8 @@ import {
   githubOperationSchema,
   repositoryResourceKind,
 } from '@inixiative/signet/contracts';
-import { declaredOperations } from '../../../../declaredOperations';
-import type { ProviderModel } from '../../../../providerModel';
+import { declaredOperations } from '../../../../catalog/declaredOperations';
+import type { ProviderModel } from '../../../../catalog/providerModel';
 import { githubEventRepositoryId } from '../../events/githubEventRepositoryId';
 import { githubRepositoryIdSchema } from './githubRepositoryIdSchema';
 import { githubRepositoryMetadataSchema } from './githubRepositoryMetadataSchema';
