@@ -11,11 +11,7 @@ const githubNotificationSchema = z.looseObject({
 });
 export type GithubNotification = z.infer<typeof githubNotificationSchema>;
 
-export const listGithubNotifications = async (
-  client: GithubClient,
-  { since }: { since: Date },
-  { pageSize = 50, maxPages = 10 }: { pageSize?: number; maxPages?: number } = {},
-) => {
+export const listGithubNotifications = async (client: GithubClient, { since }: { since: Date }) => {
   let truncated = false;
   const notifications = z.array(githubNotificationSchema).parse(
     await fetchAllGithubPages(
@@ -25,8 +21,8 @@ export const listGithubNotifications = async (
         query: { all: 'true', participating: 'true', since: since.toISOString() },
       },
       {
-        pageSize,
-        maxPages,
+        pageSize: 50,
+        maxPages: 10,
         onCapped: () => {
           truncated = true;
         },

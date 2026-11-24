@@ -7,7 +7,7 @@ export const iterateProviderPages = <R, T = unknown>(
   pagination: ProviderPagination,
   { dataKey, ...options }: PaginationOptions<R> & { dataKey?: string },
 ): AsyncIterable<{ items: T[]; page: number }> => {
-  const walk = { pageSize: pagination.pageSize, ...options };
+  const walk = { ...options, pageSize: options.pageSize ?? pagination.pageSize };
   const data = dataKey ?? pagination.keys.data;
   if (pagination.strategy === 'page')
     return iterateByPage<R, T>({ ...walk, keys: { ...pagination.keys, data } });

@@ -14,7 +14,7 @@ export const isAnotherPage = (
   const totalPages =
     keys.totalPages === undefined ? undefined : readPath(response, keys.totalPages);
   if (typeof totalPages === 'number') return progress.pages < totalPages;
-  if (pageSize === undefined || itemCount < pageSize) return false;
   const total = keys.total === undefined ? undefined : readPath(response, keys.total);
-  return typeof total !== 'number' || progress.rows < total;
+  if (typeof total === 'number') return progress.rows < total;
+  return pageSize !== undefined && itemCount >= pageSize;
 };

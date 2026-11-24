@@ -138,3 +138,40 @@ describe('pagination readers', () => {
     ).toEqual([0]);
   });
 });
+
+describe('pagination readers refuse what they cannot read', () => {
+  it('throws when the page holds no array where the provider says it is', async () => {
+    await expect(
+      fetchAllByPage({ keys: pageKeys, fetchPage: async () => ({ total: 3 }) }),
+    ).rejects.toThrow('has no array at "items"');
+  });
+
+  it('walks to a reported total when no page size was sent', async () => {
+    let calls = 0;
+    const items = await fetchAllByPage({
+      keys: pageKeys,
+      fetchPage: async () => {
+        calls++;
+        return { total: 6, items: rows(2) };
+      },
+    });
+    expect(calls).toBe(3);
+    expect(items).toHaveLength(6);
+  });
+
+  it('keeps the provider’s page size when a call passes none', async () => {
+    const sent: Record<string, string | number>[] = [];
+    const walk = iterateProviderPages(
+      { strategy: 'page', keys: pageKeys, pageSize: 100 },
+      {
+        pageSize: undefined,
+        fetchPage: async (request) => {
+          sent.push(request);
+          return { items: rows(1) };
+        },
+      },
+    );
+    for await (const _page of walk);
+    expect(sent).toEqual([{ page: 1, per_page: 100 }]);
+  });
+});

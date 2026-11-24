@@ -29,7 +29,9 @@ export const iterateByPage = <R, T = unknown>(options: ByPageOptions<R, T>) => (
       );
       const page = progress.pages;
       if (options.itemKey) {
-        const total = keys.total === undefined ? undefined : readPath(response, keys.total);
+        if (keys.total === undefined)
+          throw new IncompletePageWalkError(label, 'itemKey needs a total key');
+        const total = readPath(response, keys.total);
         if (typeof total !== 'number')
           throw new IncompletePageWalkError(label, `page ${page} has no total at "${keys.total}"`);
         firstTotal ??= total;

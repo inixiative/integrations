@@ -5,12 +5,11 @@ import { githubInstallationSchema } from './githubInstallation';
 export const fetchGithubUserInstallation = async (
   client: GithubClient,
   { installationId }: { installationId: string },
-  { maxPages = 10 }: { maxPages?: number } = {},
 ) => {
   const pages = iterateGithubPages(
     client,
     { path: '/user/installations', dataKey: 'installations' },
-    { maxPages },
+    { maxPages: 10 },
   );
   for await (const { items } of pages)
     for (const candidate of items) {

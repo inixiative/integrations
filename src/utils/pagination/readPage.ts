@@ -19,7 +19,7 @@ export const readPage = async <R, T>(
   }
   options.onResponse?.(response, page);
 
-  const items = readPath(response, dataKey) ?? [];
+  const items = readPath(response, dataKey);
   if (!Array.isArray(items)) throw new Error(`${label}: page ${page} has no array at "${dataKey}"`);
   progress.pages = page;
   progress.rows += items.length;
