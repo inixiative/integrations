@@ -2,6 +2,12 @@ import type { ProviderPagination } from '../../utils/pagination/providerPaginati
 
 export const linearPagination = {
   strategy: 'cursor',
-  keys: { cursor: 'after', pageSize: 'first', data: '', nextCursor: '' },
+  keys: {
+    cursor: 'after',
+    pageSize: 'first',
+    data: 'nodes',
+    nextCursor: 'pageInfo.endCursor',
+    hasMore: 'pageInfo.hasNextPage',
+  },
   pageSize: 250,
 } satisfies ProviderPagination;

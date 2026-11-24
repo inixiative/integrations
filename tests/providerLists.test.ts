@@ -106,3 +106,35 @@ describe('provider lists walk their provider’s pagination', () => {
     ).rejects.toThrow('provider_invalid_response');
   });
 });
+
+describe('provider walks stay inside the provider', () => {
+  it('refuses a path that leaves the provider’s base', async () => {
+    const { requestSlack } = await import('../src/providers/slack/requestSlack');
+    const { requestGithub } = await import('../src/providers/github/requestGithub');
+    const send = async () => Response.json({ ok: true });
+    for (const path of ['https://evil.example/x', '//evil.example/x', '/auth.test'])
+      await expect(requestSlack({ token: 't', send }, { path })).rejects.toThrow(
+        'unsupported_operation',
+      );
+    await expect(
+      requestGithub({ token: 't', send }, { path: 'https://evil.example/x' }),
+    ).rejects.toThrow('unsupported_operation');
+  });
+
+  it('answers a provider error when a list repeats its cursor', async () => {
+    await expect(
+      listSlackChannels({
+        token: 'xoxb',
+        send: async () =>
+          Response.json({ ok: true, channels: [], response_metadata: { next_cursor: 'same' } }),
+      }),
+    ).rejects.toThrow('provider_invalid_response');
+    await expect(
+      listLinearWebhooks({
+        method: 'bearer',
+        token: 't',
+        send: async () => webhooksPage(['a'], true, 'same'),
+      }),
+    ).rejects.toThrow('provider_invalid_response');
+  });
+});

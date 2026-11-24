@@ -1,3 +1,4 @@
+import { PageWalkError } from './pageWalkError';
 import type { PaginationOptions } from './paginationOptions';
 import { readPath } from './readPath';
 
@@ -20,7 +21,8 @@ export const readPage = async <R, T>(
   options.onResponse?.(response, page);
 
   const items = readPath(response, dataKey);
-  if (!Array.isArray(items)) throw new Error(`${label}: page ${page} has no array at "${dataKey}"`);
+  if (!Array.isArray(items))
+    throw new PageWalkError(`${label}: page ${page} has no array at "${dataKey}"`);
   progress.pages = page;
   progress.rows += items.length;
   return { response, items };
