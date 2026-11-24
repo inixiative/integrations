@@ -119,7 +119,7 @@ describe('pagination readers', () => {
       iterateProviderPages(
         { strategy: 'cursor', keys: cursorKeys, pageSize: 200 },
         {
-          dataKey: 'channels',
+          keys: { data: 'channels' },
           fetchPage: async (request) => {
             sent.push(request);
             return { channels: [1], meta: { next: sent.length === 1 ? 'next' : null } };

@@ -16,7 +16,7 @@ export const listInstallationRepositories = async (client: GithubClient) => {
       client,
       { path: '/installation/repositories' },
       {
-        dataKey: 'repositories',
+        keys: { data: 'repositories' },
         onResponse: (response) => {
           if (totalSchema.parse(response).total_count > providerResourceLimit)
             throw new ProviderError('too_many_repositories', 409);

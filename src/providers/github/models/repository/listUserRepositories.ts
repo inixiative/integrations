@@ -16,7 +16,7 @@ export const listUserRepositories = async (client: GithubClient) => {
     await fetchAllGithubPages(
       client,
       { path: '/user/installations' },
-      { dataKey: 'installations' },
+      { keys: { data: 'installations' } },
     ),
   );
   const listed = new Map<string, string>();
@@ -25,7 +25,7 @@ export const listUserRepositories = async (client: GithubClient) => {
       await fetchAllGithubPages(
         client,
         { path: `/user/installations/${installation.id}/repositories` },
-        { dataKey: 'repositories' },
+        { keys: { data: 'repositories' } },
       ),
     );
     for (const repository of repositories)

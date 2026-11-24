@@ -9,7 +9,7 @@ export const fetchGithubUserInstallation = async (
   const pages = iterateGithubPages(
     client,
     { path: '/user/installations' },
-    { dataKey: 'installations', maxPages: 10 },
+    { keys: { data: 'installations' }, maxPages: 10 },
   );
   for await (const { items } of pages)
     for (const candidate of items) {

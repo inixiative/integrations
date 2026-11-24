@@ -10,7 +10,7 @@ export const iterateGithubPages = (
   input: GithubRequestInput,
   options: GithubPagesOptions = {},
 ) => {
-  const pageSize = input.query?.[githubPagination.keys.pageSize];
+  const pageSize = input.query?.[options.keys?.pageSize ?? githubPagination.keys.pageSize];
   return iterateProviderPages(githubPagination, {
     ...options,
     pageSize: pageSize === undefined ? undefined : Number(pageSize),
