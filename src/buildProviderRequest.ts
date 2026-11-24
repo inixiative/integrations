@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { providers } from './catalog';
 import type { ProviderContext } from './contracts';
 import { credentialSecretSchema } from './contracts';
+import { findOperationHandler } from './findOperationHandler';
 import { integrationConfigurationSchemas } from './integrationConfigurationSchemas';
 import { isUncalledLeaf } from './isUncalledLeaf';
-import { operationHandler } from './registry';
 import { resourceExternalIdSchemas } from './resourceExternalIdSchemas';
 import { resourceMetadataSchemas } from './resourceMetadataSchemas';
 import { ProviderError } from './utils/providerError';
@@ -32,7 +32,7 @@ export const buildProviderRequest = (
     Accept: 'application/json',
     Authorization: context.method === 'apiKey' ? secret.token : `Bearer ${secret.token}`,
   });
-  const client = operationHandler(definition.key);
+  const client = findOperationHandler(definition.key);
   if (!client) throw new ProviderError('unsupported_integration', 400);
   const { url, body } = client.request({
     context,

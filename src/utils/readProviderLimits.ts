@@ -1,5 +1,5 @@
 import type { InferenceProtocol } from '../contracts';
-import { count } from './count';
+import { headerNumber } from './headerNumber';
 import type { ProviderReading } from './providerReading';
 import { providerReadingSchema } from './providerReadingSchema';
 import { readRateLimit } from './readRateLimit';
@@ -8,8 +8,8 @@ const ANTHROPIC_WINDOWS = ['requests', 'tokens', 'input-tokens', 'output-tokens'
 const OPENAI_WINDOWS = ['requests', 'tokens'] as const;
 
 const usedPercent = (limit: string | null, remaining: string | null): number | null => {
-  const total = count(limit),
-    left = count(remaining);
+  const total = headerNumber(limit),
+    left = headerNumber(remaining);
   if (total === null || left === null || total <= 0 || left < 0) return null;
   return Math.min(100, Math.max(0, ((total - Math.min(left, total)) / total) * 100));
 };
