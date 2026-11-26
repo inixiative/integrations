@@ -13,6 +13,7 @@ export const chorusProvider: ProviderDefinition = {
   authMethods: [],
   inbound: true,
   delivery: 'installationSocket',
+  holderHandleKinds: [chorusResourceKind],
   operations: declaredOperations(
     chorusOperationNames,
     chorusResourceKind,

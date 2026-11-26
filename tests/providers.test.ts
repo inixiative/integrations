@@ -262,4 +262,8 @@ describe('integration transports', () => {
       executeProvider({ send: async () => new Response('not-json') }, context('drive')),
     ).rejects.toThrow('provider_invalid_response');
   });
+  it('exposes chorus resource externalId handles to Signet holders', () => {
+    const chorus = providers.find((item) => item.key === 'chorus');
+    expect(chorus?.holderHandleKinds).toContain('chorus');
+  });
 });
