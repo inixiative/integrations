@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { providers } from '../src/catalog/providers';
+import { findIntegrationFamily } from '../src/catalog/findIntegrationFamily';
 import { refreshProviderCredential } from '../src/credentials/refreshProviderCredential';
 import { validateCredentialSecret } from '../src/credentials/validateCredentialSecret';
 
@@ -84,7 +84,7 @@ describe('OAuth refresh transports', () => {
   });
   it('refreshes a Google family grant with the AuthProvider client and never stores that client', async () => {
     const family = { token: 'old-access', oauth: { refreshToken: 'family-refresh' } };
-    const tokenUrl = providers.find((item) => item.key === 'google')?.oauth?.tokenUrl;
+    const tokenUrl = findIntegrationFamily('google')?.oauth?.tokenUrl;
     const result = await refreshProviderCredential(
       {
         app: { clientId: 'app-client', clientSecret: 'app-secret' },

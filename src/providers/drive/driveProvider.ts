@@ -4,8 +4,8 @@ export const driveProvider: ProviderDefinition = {
   key: 'drive',
   name: 'Google Drive',
   documentationUrl: 'https://developers.google.com/workspace/drive/api/reference/rest/v3/files/get',
-  authMethods: ['oauth2'],
-  family: 'google',
+  authMethods: ['integrationFamily'],
+  integrationFamily: 'google',
   oauthScopes: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
   operations: [
     {

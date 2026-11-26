@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+import { acceptedCredentialMethods } from '../src/catalog/acceptedCredentialMethods';
 import { isUncalledLeaf } from '../src/catalog/isUncalledLeaf';
 import { providers } from '../src/catalog/providers';
 import type { Provider, ProviderContext } from '../src/contracts';
@@ -29,9 +30,9 @@ const context = (key: Provider): ProviderContext => ({
   operation: firstOperation(key).key,
   input: isGithub(key) ? { objectId: 'a'.repeat(40) } : {},
   limit: 15,
-  method: providers.find((item) => item.key === key)?.authMethods.includes('bearer')
+  method: acceptedCredentialMethods(key).includes('bearer')
     ? 'bearer'
-    : (providers.find((item) => item.key === key)?.authMethods[0] ?? 'oauth2'),
+    : (acceptedCredentialMethods(key)[0] ?? 'oauth2'),
   secret: { token: 'private-provider-token' },
 });
 
@@ -72,9 +73,6 @@ describe('integration transports', () => {
               ...base,
               resource: { ...base.resource, kind: operation.resourceKind },
               operation: operation.key,
-              method: definition.authMethods.includes('bearer')
-                ? 'bearer'
-                : definition.authMethods[0],
             }),
           ).toThrow('unsupported_integration');
           continue;
@@ -102,7 +100,6 @@ describe('integration transports', () => {
           ...base,
           resource: { ...base.resource, kind: operation.resourceKind },
           operation: operation.key,
-          method: definition.authMethods.includes('bearer') ? 'bearer' : definition.authMethods[0],
         });
         expect(new URL(request.url).hostname).toBe(hosts[definition.key as keyof typeof hosts]);
         expect(request.redirect).toBe('error');

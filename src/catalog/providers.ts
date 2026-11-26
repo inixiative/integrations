@@ -10,10 +10,8 @@ import { driveProvider } from '../providers/drive/driveProvider';
 import { foundryProvider } from '../providers/foundry/foundryProvider';
 import { geminiApiProvider } from '../providers/geminiApi/geminiApiProvider';
 import { githubOrganizationProvider } from '../providers/github/githubOrganizationProvider';
-import { githubProvider } from '../providers/github/githubProvider';
 import { githubUserProvider } from '../providers/github/githubUserProvider';
 import { gmailProvider } from '../providers/gmail/gmailProvider';
-import { googleProvider } from '../providers/google/googleProvider';
 import { jiraProvider } from '../providers/jira/jiraProvider';
 import { linearProvider } from '../providers/linear/linearProvider';
 import { museProvider } from '../providers/muse/museProvider';
@@ -32,7 +30,6 @@ export const providers: ProviderDefinition[] = [
   linearProvider,
   notionProvider,
   jiraProvider,
-  googleProvider,
   gmailProvider,
   driveProvider,
   confluenceProvider,
@@ -43,7 +40,6 @@ export const providers: ProviderDefinition[] = [
   foundryProvider,
   oracleProvider,
   chorusProvider,
-  githubProvider,
   githubOrganizationProvider,
   githubUserProvider,
   railwayProvider,

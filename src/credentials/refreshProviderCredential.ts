@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
-import { providers } from '../catalog/providers';
+import { findIntegrationFamily } from '../catalog/findIntegrationFamily';
 import { type CredentialSecret, credentialSecretSchema, type OAuthClient } from '../contracts';
 import { jwtClaims } from '../utils/jwtClaims';
 import { ProviderError } from '../utils/providerError';
@@ -33,7 +33,6 @@ const refreshRequest = (
   const publicClient = provider === 'codex';
   if (!clientId || (!clientSecret && !publicClient))
     throw new ProviderError('renewal_unsupported', 409);
-  const familyOAuth = providers.find((definition) => definition.key === provider)?.oauth;
   const fields = {
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
@@ -53,9 +52,7 @@ const refreshRequest = (
       };
     case 'githubUser':
       return {
-        url: z
-          .url()
-          .parse(providers.find((definition) => definition.key === 'github')?.oauth?.tokenUrl),
+        url: z.url().parse(findIntegrationFamily('github')?.oauth?.tokenUrl),
         headers,
         body: new URLSearchParams(fields).toString(),
       };
@@ -67,7 +64,7 @@ const refreshRequest = (
       };
     case 'google':
       return {
-        url: z.url().parse(familyOAuth?.tokenUrl),
+        url: z.url().parse(findIntegrationFamily('google')?.oauth?.tokenUrl),
         headers,
         body: new URLSearchParams(fields).toString(),
       };
@@ -77,6 +74,7 @@ const refreshRequest = (
         headers,
         body: new URLSearchParams(fields).toString(),
       };
+    case 'atlassian':
     case 'jira':
     case 'confluence':
       headers.set('Content-Type', 'application/json');
@@ -135,7 +133,16 @@ const refreshedSecret = (
   });
   if (!refreshed.success) throw new ProviderError('renewal_outcome_unknown', 409);
   if (
-    ['slack', 'linear', 'jira', 'confluence', 'notion', 'codex', 'githubUser'].includes(provider) &&
+    [
+      'slack',
+      'linear',
+      'atlassian',
+      'jira',
+      'confluence',
+      'notion',
+      'codex',
+      'githubUser',
+    ].includes(provider) &&
     !data.refresh_token
   )
     throw new ProviderError('renewal_outcome_unknown', 409);

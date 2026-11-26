@@ -11,7 +11,7 @@ import { slackOperationHandler } from '../providers/slack/models/channel/slackOp
 import { teamsOperationHandler } from '../providers/teams/teamsOperationHandler';
 import type { OperationHandler } from './operationHandler';
 
-// why: null marks a provider reached outside the generic HTTP path (own client, Signet, family, or admitted elsewhere).
+// why: null marks a provider reached outside the generic HTTP path (own client, Signet, or admitted elsewhere).
 export const operationHandlers: Record<Provider, OperationHandler | null> = {
   slack: slackOperationHandler,
   discord: discordOperationHandler,
@@ -21,10 +21,8 @@ export const operationHandlers: Record<Provider, OperationHandler | null> = {
   jira: jiraOperationHandler,
   drive: driveOperationHandler,
   confluence: confluenceOperationHandler,
-  github: null,
   githubOrganization: githubOperationHandler,
   githubUser: githubOperationHandler,
-  google: null,
   anthropic: null,
   openai: null,
   geminiApi: null,

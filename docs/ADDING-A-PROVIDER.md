@@ -8,6 +8,8 @@ Start from the provider's own API documentation, and write down its models first
 2. Add `src/providers/<provider>/<provider>Provider.ts` exporting a `ProviderDefinition`, and list it in `src/catalog/providers.ts`. The catalog's order is the order consumers render.
 3. Add an entry to `operationHandlers` (`src/operations/operationHandlers.ts`): a handler, or `null` when nothing reaches the provider through the generic operation path.
 
+If the provider shares one consent with others from the same vendor, name its family (`integrationFamily: 'atlassian'`) and list `integrationFamily` in its `authMethods` when it can authenticate through that family. A new family goes in `integrationFamilySchema` and `catalog/integrationFamilies.ts`, as `src/providers/<family>/<family>IntegrationFamily.ts` with the family's own `authMethods` and OAuth endpoints. A family is never a provider.
+
 An operation is `{ key, name, resourceKind, requiredScopes }`. Events are operations whose key starts `events.`. For several operations on one kind with the same scopes, use `declaredOperations(names, resourceKind, requiredScopes)`.
 
 For our own apps (Archive, Foundry, Chorus), operation names and kinds come from `@inixiative/signet/contracts`.

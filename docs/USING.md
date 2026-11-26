@@ -21,6 +21,21 @@ eventLeaves('linear', 'team');                       // only the event keys
 
 A `ProviderDefinition` carries `key`, `name`, `documentationUrl`, `authMethods` and `operations`. Each operation has a `key`, a `name`, the `resourceKind` it acts on and its `requiredScopes`. A key starting `events.` is an event (`isEventLeaf`).
 
+## Integration families and auth methods
+
+An integration family (`google`, `github`, `atlassian`, `inixiative`) is one consent shared by several products. Families are their own catalog entries (`integrationFamilies`, `findIntegrationFamily`), never providers, and carry their own `authMethods` and OAuth endpoints. A product names its family in `integrationFamily`; `integrationFamilyProducts('google')` lists Gmail and Drive.
+
+`authMethods` lists the ways something can authenticate. On a product it may include `integrationFamily`, meaning "through the family's auth", beside methods of its own: `githubUser` is `['integrationFamily', 'bearer']`. A stored credential's method is always a real one, so `authMethods` is a superset of `CredentialMethod`.
+
+```ts
+import { acceptedCredentialMethods } from '@inixiative/integrations/catalog/acceptedCredentialMethods';
+
+acceptedCredentialMethods('drive');      // ['oauth2'], from the google family
+acceptedCredentialMethods('githubUser'); // ['bearer', 'oauth2']
+```
+
+Check a credential against `acceptedCredentialMethods`, not `authMethods`. A credential entered on a product belongs to that integration; one obtained through the family belongs to the family, and any product listing `integrationFamily` may use it.
+
 ## Check a resource before storing it
 
 ```ts
@@ -88,7 +103,7 @@ await executeProvider({ send }, {
 import { exchangeOauthCode } from '@inixiative/integrations/credentials/exchangeOauthCode';
 import { refreshProviderCredential } from '@inixiative/integrations/credentials/refreshProviderCredential';
 
-await exchangeOauthCode({ app }, { family: 'google', code, codeVerifier, redirectUri });
+await exchangeOauthCode({ app }, { integrationFamily: 'google', code, codeVerifier, redirectUri });
 await refreshProviderCredential({ app }, { provider: 'githubOrganization', secret });
 ```
 

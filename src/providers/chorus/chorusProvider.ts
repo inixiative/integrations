@@ -11,6 +11,7 @@ export const chorusProvider: ProviderDefinition = {
   name: 'Chorus',
   documentationUrl: 'https://github.com/inixiative/chorus',
   authMethods: [],
+  integrationFamily: 'inixiative',
   inbound: true,
   delivery: 'installationSocket',
   holderHandleKinds: [chorusResourceKind],

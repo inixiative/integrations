@@ -5,8 +5,8 @@ export const gmailProvider: ProviderDefinition = {
   name: 'Gmail',
   documentationUrl:
     'https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.messages/list',
-  authMethods: ['oauth2'],
-  family: 'google',
+  authMethods: ['integrationFamily'],
+  integrationFamily: 'google',
   oauthScopes: ['https://www.googleapis.com/auth/gmail.readonly'],
   operations: [
     {
