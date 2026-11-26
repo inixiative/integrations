@@ -30,12 +30,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@inixiative/signet": "^0.28.0",
+    "@inixiative/signet": "^0.29.0",
     "jose": "^6.2.3"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.2",
-    "@inixiative/config": "^0.5.237",
+    "@inixiative/config": "^0.5.252",
     "@types/bun": "1.4.4",
     "lefthook": "2.1.9",
     "typescript": "6.0.3",
