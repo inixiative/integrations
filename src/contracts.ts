@@ -35,11 +35,14 @@ export const credentialSecretSchema = z.strictObject({
 });
 export type CredentialSecret = z.infer<typeof credentialSecretSchema>;
 export const credentialMethodSchema = z.enum(['bearer', 'apiKey', 'oauth2', 'clientCredentials']);
+export type CredentialMethod = z.infer<typeof credentialMethodSchema>;
 export const renewableCredentialMethods: string[] = credentialMethodSchema.extract([
   'oauth2',
   'clientCredentials',
 ]).options;
 export const isRenewableMethod = (method: string) => renewableCredentialMethods.includes(method);
+export const authMethodSchema = z.enum([...credentialMethodSchema.options, 'integrationFamily']);
+export type AuthMethod = z.infer<typeof authMethodSchema>;
 
 export const catalogOperationSchema = z.object({
   key: operationKeySchema,
@@ -54,7 +57,6 @@ export const providerSchema = z.enum([
   'linear',
   'notion',
   'jira',
-  'google',
   'gmail',
   'drive',
   'confluence',
@@ -62,7 +64,6 @@ export const providerSchema = z.enum([
   'openai',
   'geminiApi',
   'archive',
-  'github',
   'githubOrganization',
   'githubUser',
   'foundry',
@@ -74,19 +75,38 @@ export const providerSchema = z.enum([
   'codex',
   'muse',
 ]);
-export const providerDefinitionSchema = z.object({
-  key: providerSchema,
-  name: z.string(),
-  documentationUrl: z.url(),
-  authMethods: z.array(credentialMethodSchema),
-  operations: z.array(catalogOperationSchema),
-  inbound: z.boolean().optional(),
-  delivery: z.literal('installationSocket').optional(),
-  subscription: z.boolean().optional(),
-  family: providerSchema.optional(),
-  oauthScopes: z.array(z.string()).optional(),
-  oauth: z.object({ authorizeUrl: z.url(), tokenUrl: z.url() }).optional(),
-});
+export const integrationFamilySchema = z.enum(['google', 'github', 'atlassian', 'inixiative']);
+export type IntegrationFamily = z.infer<typeof integrationFamilySchema>;
+export const integrationFamilyDefinitionSchema = z
+  .object({
+    key: integrationFamilySchema,
+    name: z.string(),
+    documentationUrl: z.url(),
+    authMethods: z.array(credentialMethodSchema),
+    oauth: z.object({ authorizeUrl: z.url(), tokenUrl: z.url() }).optional(),
+  })
+  .refine((definition) => !definition.authMethods.includes('oauth2') || definition.oauth, {
+    message: 'an integration family with oauth2 auth needs its OAuth endpoints',
+  });
+export type IntegrationFamilyDefinition = z.infer<typeof integrationFamilyDefinitionSchema>;
+export const providerDefinitionSchema = z
+  .object({
+    key: providerSchema,
+    name: z.string(),
+    documentationUrl: z.url(),
+    authMethods: z.array(authMethodSchema),
+    operations: z.array(catalogOperationSchema),
+    inbound: z.boolean().optional(),
+    delivery: z.literal('installationSocket').optional(),
+    subscription: z.boolean().optional(),
+    integrationFamily: integrationFamilySchema.optional(),
+    oauthScopes: z.array(z.string()).optional(),
+  })
+  .refine(
+    (definition) =>
+      !definition.authMethods.includes('integrationFamily') || definition.integrationFamily,
+    { message: 'integrationFamily auth needs the provider to name its integrationFamily' },
+  );
 export type Provider = z.infer<typeof providerSchema>;
 export type OAuthClient = { clientId: string; clientSecret: string };
 export type SigningClient = OAuthClient & { appId: string; privateKey: string };

@@ -7,7 +7,7 @@ export const githubUserProvider: ProviderDefinition = {
   name: 'GitHub user',
   documentationUrl:
     'https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-with-a-github-app-on-behalf-of-a-user',
-  authMethods: ['oauth2', 'bearer'],
-  family: 'github',
+  authMethods: ['integrationFamily', 'bearer'],
+  integrationFamily: 'github',
   operations: [...githubRepository.operations, ...githubAccount.events],
 };

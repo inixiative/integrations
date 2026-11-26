@@ -5,6 +5,7 @@ export const oracleProvider: ProviderDefinition = {
   name: 'Oracle',
   documentationUrl: 'https://github.com/inixiative/oracle',
   authMethods: [],
+  integrationFamily: 'inixiative',
   inbound: true,
   operations: [],
 };

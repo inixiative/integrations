@@ -30,6 +30,7 @@ src/
   operations/             running one declared operation: buildProviderRequest, executeProvider, operationHandlers
   credentials/            code exchange, renewal, minting, credential checks
   resources/              identifier, metadata and configuration schemas per provider
+  integrationFamilies/    <family>IntegrationFamily.ts: one consent shared by several providers, never a provider itself
   providers/<provider>/
     <provider>Provider.ts       the definition the catalog lists
     <provider>Pagination.ts     strategy and key names, if it has lists

@@ -155,8 +155,5 @@ describe('GitHub scoped immutable reads', () => {
     expect(() => buildProviderRequest({ ...context, method: 'bearer' })).toThrow(
       'unsupported_authentication',
     );
-    expect(() => buildProviderRequest({ ...context, provider: 'github' })).toThrow(
-      'unsupported_operation',
-    );
   });
 });

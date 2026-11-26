@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { acceptedCredentialMethods } from '../catalog/acceptedCredentialMethods';
 import { isUncalledLeaf } from '../catalog/isUncalledLeaf';
 import { providers } from '../catalog/providers';
 import type { ProviderContext } from '../contracts';
@@ -18,7 +19,7 @@ export const buildProviderRequest = (
   if (!definition || !operation || operation.resourceKind !== context.resource.kind)
     throw new ProviderError('unsupported_operation', 400);
   if (isUncalledLeaf(operation.key)) throw new ProviderError('unsupported_integration', 400);
-  if (!definition.authMethods.includes(context.method))
+  if (!acceptedCredentialMethods(context.provider).includes(context.method))
     throw new ProviderError('unsupported_authentication', 400);
   const configuration = integrationConfigurationSchemas[definition.key].parse(
     context.configuration,

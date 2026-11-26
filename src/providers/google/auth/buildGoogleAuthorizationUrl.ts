@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { findProvider } from '../../../catalog/findProvider';
+import { integrationFamilyDefinition } from '../../../catalog/integrationFamilyDefinition';
 import type { Provider } from '../../../contracts';
 
 export const buildGoogleAuthorizationUrl = (input: {
@@ -10,7 +11,7 @@ export const buildGoogleAuthorizationUrl = (input: {
   codeChallenge: string;
   loginHint?: string;
 }) => {
-  const url = new URL(z.url().parse(findProvider('google')?.oauth?.authorizeUrl));
+  const url = new URL(z.url().parse(integrationFamilyDefinition('google')?.oauth?.authorizeUrl));
   const scopes = [
     ...new Set([
       ...input.products.flatMap((product) => findProvider(product)?.oauthScopes ?? []),

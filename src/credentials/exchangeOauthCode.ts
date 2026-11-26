@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { findProvider } from '../catalog/findProvider';
-import type { OAuthClient, Provider } from '../contracts';
+import { integrationFamilyDefinition } from '../catalog/integrationFamilyDefinition';
+import type { IntegrationFamily, OAuthClient } from '../contracts';
 import { ProviderError } from '../utils/providerError';
 import type { ProviderSend } from '../utils/providerSend';
 import { readProviderJson } from '../utils/readProviderJson';
@@ -15,10 +15,16 @@ const tokenResponseSchema = z.object({
 
 export const exchangeOauthCode = async (
   { app, send = fetch }: { app: OAuthClient; send?: ProviderSend },
-  input: { family: Provider; code: string; codeVerifier?: string; redirectUri?: string },
+  input: {
+    integrationFamily: IntegrationFamily;
+    code: string;
+    codeVerifier?: string;
+    redirectUri?: string;
+  },
 ) => {
-  const { family } = input;
-  const tokenUrl = z.url().parse(findProvider(family)?.oauth?.tokenUrl);
+  const tokenUrl = z
+    .url()
+    .parse(integrationFamilyDefinition(input.integrationFamily)?.oauth?.tokenUrl);
   let response: Response;
   try {
     response = await send(

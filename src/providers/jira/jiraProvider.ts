@@ -5,6 +5,7 @@ export const jiraProvider: ProviderDefinition = {
   name: 'Jira',
   documentationUrl: 'https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/',
   authMethods: ['bearer', 'oauth2'],
+  integrationFamily: 'atlassian',
   operations: [
     {
       key: 'issues.read',
