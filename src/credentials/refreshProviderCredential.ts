@@ -1,13 +1,21 @@
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
-import { findIntegrationFamily } from '../catalog/findIntegrationFamily';
-import { type CredentialSecret, credentialSecretSchema, type OAuthClient } from '../contracts';
+import { findProvider } from '../catalog/findProvider';
+import { integrationFamilyDefinition } from '../catalog/integrationFamilyDefinition';
+import {
+  type CredentialSecret,
+  credentialSecretSchema,
+  type IntegrationFamily,
+  type OAuthClient,
+  type Provider,
+} from '../contracts';
 import { jwtClaims } from '../utils/jwtClaims';
 import { ProviderError } from '../utils/providerError';
 import { CODEX_TOKEN_URL } from './codexTokenUrl';
 import type { CredentialClient } from './credentialClient';
 import { fetchRenewalResponse } from './fetchRenewalResponse';
 import { mintProviderCredential } from './mintProviderCredential';
+import type { RenewalOwner } from './renewalOwner';
 import type { RenewalRequest } from './renewalRequest';
 
 const secondsUntilJwtExpiry = (token: string) => {
@@ -21,8 +29,21 @@ const secondsUntilJwtExpiry = (token: string) => {
     .parse(exp.data - Math.floor(Date.now() / 1000));
 };
 
+const renewalEndpointKey = (owner: RenewalOwner): Provider | IntegrationFamily => {
+  if ('integrationFamily' in owner) return owner.integrationFamily;
+  const definition = findProvider(owner.provider);
+  if (!definition?.integrationFamily || !definition.authMethods.includes('oauth2'))
+    return owner.provider;
+  return integrationFamilyDefinition(definition.integrationFamily)?.oauth
+    ? definition.integrationFamily
+    : owner.provider;
+};
+
+const familyTokenUrl = (integrationFamily: IntegrationFamily) =>
+  z.url().parse(integrationFamilyDefinition(integrationFamily)?.oauth?.tokenUrl);
+
 const refreshRequest = (
-  provider: string,
+  provider: Provider | IntegrationFamily,
   secret: CredentialSecret,
   client?: OAuthClient,
 ): RenewalRequest => {
@@ -50,21 +71,16 @@ const refreshRequest = (
         headers,
         body: new URLSearchParams(fields).toString(),
       };
-    case 'githubUser':
+    case 'github':
+    case 'google':
       return {
-        url: z.url().parse(findIntegrationFamily('github')?.oauth?.tokenUrl),
+        url: familyTokenUrl(provider),
         headers,
         body: new URLSearchParams(fields).toString(),
       };
     case 'linear':
       return {
         url: 'https://api.linear.app/oauth/token',
-        headers,
-        body: new URLSearchParams(fields).toString(),
-      };
-    case 'google':
-      return {
-        url: z.url().parse(findIntegrationFamily('google')?.oauth?.tokenUrl),
         headers,
         body: new URLSearchParams(fields).toString(),
       };
@@ -75,11 +91,9 @@ const refreshRequest = (
         body: new URLSearchParams(fields).toString(),
       };
     case 'atlassian':
-    case 'jira':
-    case 'confluence':
       headers.set('Content-Type', 'application/json');
       return {
-        url: 'https://auth.atlassian.com/oauth/token',
+        url: familyTokenUrl(provider),
         headers,
         body: JSON.stringify(fields),
       };
@@ -113,7 +127,7 @@ const refreshRequest = (
 };
 
 const refreshedSecret = (
-  provider: string,
+  provider: Provider | IntegrationFamily,
   secret: CredentialSecret,
   data: Record<string, unknown>,
 ) => {
@@ -158,9 +172,10 @@ const refreshedSecret = (
 
 export const refreshProviderCredential = async (
   client: CredentialClient,
-  { provider, secret: value }: { provider: string; secret: unknown },
+  { secret: value, ...owner }: RenewalOwner & { secret: unknown },
 ) => {
   const secret = credentialSecretSchema.parse(value);
+  const provider = renewalEndpointKey(owner);
   if (secret.clientCredentials)
     return await mintProviderCredential(client, {
       provider,

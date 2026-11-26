@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 import { acceptedCredentialMethods } from '../src/catalog/acceptedCredentialMethods';
-import { authenticatesThroughIntegrationFamily } from '../src/catalog/authenticatesThroughIntegrationFamily';
-import { findIntegrationFamily } from '../src/catalog/findIntegrationFamily';
 import { findProvider } from '../src/catalog/findProvider';
 import { integrationFamilies } from '../src/catalog/integrationFamilies';
-import { integrationFamilyProducts } from '../src/catalog/integrationFamilyProducts';
+import { integrationFamilyDefinition } from '../src/catalog/integrationFamilyDefinition';
 import { isAccountSuppliedByHost } from '../src/catalog/isAccountSuppliedByHost';
+import { providerAuthenticatesThroughIntegrationFamily } from '../src/catalog/providerAuthenticatesThroughIntegrationFamily';
 import { providers } from '../src/catalog/providers';
+import { providersInIntegrationFamily } from '../src/catalog/providersInIntegrationFamily';
 import {
   integrationFamilyDefinitionSchema,
   providerDefinitionSchema,
@@ -21,37 +21,51 @@ describe('integration families', () => {
       'atlassian',
       'inixiative',
     ]);
-    for (const family of integrationFamilies) {
-      expect(integrationFamilyDefinitionSchema.parse(family)).toEqual(family);
-      expect(providerSchema.safeParse(family.key).success).toBe(false);
+    for (const integrationFamily of integrationFamilies) {
+      expect(integrationFamilyDefinitionSchema.parse(integrationFamily)).toEqual(integrationFamily);
+      expect(providerSchema.safeParse(integrationFamily.key).success).toBe(false);
     }
-    expect(findIntegrationFamily('google')).toMatchObject({
+    expect(
+      integrationFamilyDefinitionSchema.safeParse({ ...integrationFamilies[0], oauth: undefined })
+        .success,
+    ).toBe(false);
+    expect(integrationFamilyDefinition('google')).toMatchObject({
       authMethods: ['oauth2'],
       oauth: {
         authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
         tokenUrl: 'https://oauth2.googleapis.com/token',
       },
     });
-    expect(findIntegrationFamily('inixiative')?.authMethods).toEqual([]);
+    expect(integrationFamilyDefinition('inixiative')?.authMethods).toEqual([]);
   });
 
   it('list their products by the integrationFamily each product names', () => {
-    expect(integrationFamilyProducts('google').map((item) => item.key)).toEqual(['gmail', 'drive']);
-    expect(integrationFamilyProducts('github').map((item) => item.key)).toEqual([
+    expect(providersInIntegrationFamily('google').map((item) => item.key)).toEqual([
+      'gmail',
+      'drive',
+    ]);
+    expect(providersInIntegrationFamily('github').map((item) => item.key)).toEqual([
       'githubOrganization',
       'githubUser',
     ]);
-    expect(integrationFamilyProducts('atlassian').map((item) => item.key)).toEqual([
+    expect(providersInIntegrationFamily('atlassian').map((item) => item.key)).toEqual([
       'jira',
       'confluence',
     ]);
-    expect(integrationFamilyProducts('inixiative').map((item) => item.key)).toEqual([
+    expect(providersInIntegrationFamily('inixiative').map((item) => item.key)).toEqual([
       'oracle',
       'chorus',
     ]);
     expect(findProvider('drive')).toMatchObject({
       integrationFamily: 'google',
       oauthScopes: ['https://www.googleapis.com/auth/drive.metadata.readonly'],
+    });
+  });
+
+  it('keep Jira and Confluence in atlassian for grouping until Atlassian consent is supported', () => {
+    expect(findProvider('jira')).toMatchObject({
+      integrationFamily: 'atlassian',
+      authMethods: ['bearer', 'oauth2'],
     });
   });
 
@@ -70,10 +84,10 @@ describe('integration families', () => {
 describe('auth methods and the credential a call uses', () => {
   it('reads integrationFamily as one auth method beside the provider’s own', () => {
     expect(findProvider('githubUser')?.authMethods).toEqual(['integrationFamily', 'bearer']);
-    expect(authenticatesThroughIntegrationFamily('drive')).toBe(true);
-    expect(authenticatesThroughIntegrationFamily('githubOrganization')).toBe(false);
-    expect(authenticatesThroughIntegrationFamily('slack')).toBe(false);
-    expect(authenticatesThroughIntegrationFamily(null)).toBe(false);
+    expect(providerAuthenticatesThroughIntegrationFamily('drive')).toBe(true);
+    expect(providerAuthenticatesThroughIntegrationFamily('githubOrganization')).toBe(false);
+    expect(providerAuthenticatesThroughIntegrationFamily('slack')).toBe(false);
+    expect(providerAuthenticatesThroughIntegrationFamily(null)).toBe(false);
   });
 
   it('accepts the provider’s own credential methods plus its family’s, never integrationFamily itself', () => {
@@ -88,7 +102,8 @@ describe('auth methods and the credential a call uses', () => {
 
   it('supplies the account from the host when a provider authenticates through its family or has events', () => {
     expect(isAccountSuppliedByHost('gmail')).toBe(true);
-    expect(isAccountSuppliedByHost('jira')).toBe(true);
+    expect(isAccountSuppliedByHost('jira')).toBe(false);
+    expect(providerAuthenticatesThroughIntegrationFamily('jira')).toBe(false);
     expect(isAccountSuppliedByHost('notion')).toBe(false);
   });
 });

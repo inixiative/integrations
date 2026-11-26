@@ -77,13 +77,17 @@ export const providerSchema = z.enum([
 ]);
 export const integrationFamilySchema = z.enum(['google', 'github', 'atlassian', 'inixiative']);
 export type IntegrationFamily = z.infer<typeof integrationFamilySchema>;
-export const integrationFamilyDefinitionSchema = z.object({
-  key: integrationFamilySchema,
-  name: z.string(),
-  documentationUrl: z.url(),
-  authMethods: z.array(credentialMethodSchema),
-  oauth: z.object({ authorizeUrl: z.url(), tokenUrl: z.url() }).optional(),
-});
+export const integrationFamilyDefinitionSchema = z
+  .object({
+    key: integrationFamilySchema,
+    name: z.string(),
+    documentationUrl: z.url(),
+    authMethods: z.array(credentialMethodSchema),
+    oauth: z.object({ authorizeUrl: z.url(), tokenUrl: z.url() }).optional(),
+  })
+  .refine((definition) => !definition.authMethods.includes('oauth2') || definition.oauth, {
+    message: 'an integration family with oauth2 auth needs its OAuth endpoints',
+  });
 export type IntegrationFamilyDefinition = z.infer<typeof integrationFamilyDefinitionSchema>;
 export const providerDefinitionSchema = z
   .object({

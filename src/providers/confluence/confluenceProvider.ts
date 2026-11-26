@@ -4,7 +4,7 @@ export const confluenceProvider: ProviderDefinition = {
   key: 'confluence',
   name: 'Confluence',
   documentationUrl: 'https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/',
-  authMethods: ['integrationFamily', 'bearer', 'oauth2'],
+  authMethods: ['bearer', 'oauth2'],
   integrationFamily: 'atlassian',
   operations: [
     {

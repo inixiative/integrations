@@ -1,6 +1,6 @@
 import type { Provider } from '../contracts';
-import { authenticatesThroughIntegrationFamily } from './authenticatesThroughIntegrationFamily';
+import { providerAuthenticatesThroughIntegrationFamily } from './providerAuthenticatesThroughIntegrationFamily';
 import { providerHasEvents } from './providerHasEvents';
 
 export const isAccountSuppliedByHost = (provider: Provider | null | undefined) =>
-  authenticatesThroughIntegrationFamily(provider) || providerHasEvents(provider);
+  providerAuthenticatesThroughIntegrationFamily(provider) || providerHasEvents(provider);

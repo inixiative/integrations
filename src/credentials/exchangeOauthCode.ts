@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { findIntegrationFamily } from '../catalog/findIntegrationFamily';
+import { integrationFamilyDefinition } from '../catalog/integrationFamilyDefinition';
 import type { IntegrationFamily, OAuthClient } from '../contracts';
 import { ProviderError } from '../utils/providerError';
 import type { ProviderSend } from '../utils/providerSend';
@@ -22,7 +22,9 @@ export const exchangeOauthCode = async (
     redirectUri?: string;
   },
 ) => {
-  const tokenUrl = z.url().parse(findIntegrationFamily(input.integrationFamily)?.oauth?.tokenUrl);
+  const tokenUrl = z
+    .url()
+    .parse(integrationFamilyDefinition(input.integrationFamily)?.oauth?.tokenUrl);
   let response: Response;
   try {
     response = await send(

@@ -1,8 +1,8 @@
 import type { IntegrationFamilyDefinition } from '../contracts';
-import { atlassianIntegrationFamily } from '../providers/atlassian/atlassianIntegrationFamily';
-import { githubIntegrationFamily } from '../providers/github/githubIntegrationFamily';
-import { googleIntegrationFamily } from '../providers/google/googleIntegrationFamily';
-import { inixiativeIntegrationFamily } from '../providers/inixiative/inixiativeIntegrationFamily';
+import { atlassianIntegrationFamily } from '../integrationFamilies/atlassianIntegrationFamily';
+import { githubIntegrationFamily } from '../integrationFamilies/githubIntegrationFamily';
+import { googleIntegrationFamily } from '../integrationFamilies/googleIntegrationFamily';
+import { inixiativeIntegrationFamily } from '../integrationFamilies/inixiativeIntegrationFamily';
 
 export const integrationFamilies: IntegrationFamilyDefinition[] = [
   googleIntegrationFamily,

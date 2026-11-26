@@ -1,4 +1,4 @@
-import type { IntegrationFamilyDefinition } from '../../contracts';
+import type { IntegrationFamilyDefinition } from '../contracts';
 
 export const googleIntegrationFamily: IntegrationFamilyDefinition = {
   key: 'google',

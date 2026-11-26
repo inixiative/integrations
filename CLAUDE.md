@@ -30,9 +30,9 @@ src/
   operations/             running one declared operation: buildProviderRequest, executeProvider, operationHandlers
   credentials/            code exchange, renewal, minting, credential checks
   resources/              identifier, metadata and configuration schemas per provider
+  integrationFamilies/    <family>IntegrationFamily.ts: one consent shared by several providers, never a provider itself
   providers/<provider>/
     <provider>Provider.ts       the definition the catalog lists
-    <family>IntegrationFamily.ts  a family's definition (google, github, atlassian, inixiative), listed in catalog/integrationFamilies.ts
     <provider>Pagination.ts     strategy and key names, if it has lists
     request<Provider>.ts        one authenticated request
     fetchAll<Provider>Pages.ts  a walk over one list
